@@ -2,14 +2,14 @@
 
 Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows side by side, cards moving live, cursors visible, text edited together.
 
-## Phase 0: Foundation
+## Phase 0: Foundation ✅
 
 - [x] pnpm + Turborepo monorepo (`apps/web`, `apps/realtime`, `packages/shared`)
 - [x] TypeScript strict, ESLint, Prettier
 - [x] Vitest, including an integration test that syncs two realtime clients in `workerd` and checks persistence
 - [x] Realtime layer on Cloudflare Durable Objects ([ADR 4](adr/0004-cloudflare-durable-objects-for-realtime.md))
 - [x] GitHub Actions CI (format, lint, typecheck, test, build)
-- [ ] Deploy `apps/web` (Vercel) and `apps/realtime` (Cloudflare Workers)
+- [x] Deploy `apps/web` (Vercel) and `apps/realtime` (Cloudflare Workers)
 
 **Done when:** every push to `main` is green and deploys automatically.
 

@@ -2,7 +2,9 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress, currently in **Phase 0 (foundation)**. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: the foundation (Phase 0) is live, **Phase 1 (auth & workspaces)** is next. See the [roadmap](docs/ROADMAP.md).
+
+**Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
 ## Features (planned for v1)
 
@@ -86,8 +88,8 @@ The realtime Worker runs locally in `workerd` via Wrangler, so no Cloudflare acc
 
 ## Deployment
 
-- **Web app** → Vercel (project root: `apps/web`)
-- **Realtime Worker** → Cloudflare Workers, deployed by GitHub Actions on every push to `main` once the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets are set
+- **Web app** → Vercel (project root: `apps/web`), deployed on every push; pull requests get preview deployments
+- **Realtime Worker** → Cloudflare Workers, deployed by GitHub Actions after green checks on every push to `main` (needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets)
 
 ## License
 
