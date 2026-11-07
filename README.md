@@ -20,7 +20,7 @@
 | Monorepo | pnpm workspaces, Turborepo                               |
 | Web app  | Next.js (App Router), React, TypeScript (strict)         |
 | Styling  | Tailwind CSS                                             |
-| Realtime | Yjs (CRDT) + Hocuspocus WebSocket server                 |
+| Realtime | Yjs (CRDT) on Cloudflare Durable Objects (y-partyserver) |
 | Shared   | Zod schemas and domain logic shared by client and server |
 | Testing  | Vitest, Playwright (planned)                             |
 | Quality  | ESLint, Prettier, GitHub Actions CI, Dependabot          |
@@ -33,15 +33,15 @@ flowchart LR
     UI[Next.js UI] --- YDoc[(Y.Doc + IndexedDB)]
   end
   UI -- HTTP / Server Actions --> Web[apps/web<br/>Next.js server]
-  YDoc -- WebSocket --> RT[apps/realtime<br/>Hocuspocus]
+  YDoc -- WebSocket --> RT[apps/realtime<br/>Cloudflare Worker]
+  RT --> Room[(BoardRoom<br/>Durable Object per board<br/>+ SQLite snapshot)]
   Web --> DB[(Postgres)]
-  RT --> DB
   Shared[packages/shared<br/>types · schemas · permissions] -.-> Web
   Shared -.-> RT
 ```
 
 - **Relational data** (users, workspaces, memberships, permissions) lives in Postgres and is served by the Next.js app.
-- **Board content** (columns, cards, text) is a Yjs document synced through the realtime server and persisted as snapshots.
+- **Board content** (columns, cards, text) is a Yjs document. Every board has its own Durable Object: all clients of a board connect to it, and it persists the document in its own SQLite storage.
 
 The reasoning behind these choices is recorded in [Architecture Decision Records](docs/adr).
 
@@ -50,7 +50,7 @@ The reasoning behind these choices is recorded in [Architecture Decision Records
 ```
 apps/
   web/        Next.js frontend and API
-  realtime/   Hocuspocus WebSocket server
+  realtime/   Cloudflare Worker with one Durable Object per board
 packages/
   shared/     Domain types, Zod schemas, permission rules
 docs/
@@ -68,7 +68,7 @@ pnpm dev
 ```
 
 - Web app: http://localhost:3000
-- Realtime server: ws://localhost:1234 (health check: http://localhost:1234/health)
+- Realtime Worker: ws://localhost:8787 (health check: http://localhost:8787/health)
 
 ## Scripts
 
@@ -81,6 +81,13 @@ pnpm dev
 | `pnpm typecheck` | Type-check all packages                          |
 | `pnpm check`     | Everything CI runs: lint, typecheck, test, build |
 | `pnpm format`    | Format the codebase with Prettier                |
+
+The realtime Worker runs locally in `workerd` via Wrangler, so no Cloudflare account is needed for development.
+
+## Deployment
+
+- **Web app** → Vercel (project root: `apps/web`)
+- **Realtime Worker** → Cloudflare Workers, deployed by GitHub Actions on every push to `main` once the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets are set
 
 ## License
 

@@ -6,9 +6,10 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 - [x] pnpm + Turborepo monorepo (`apps/web`, `apps/realtime`, `packages/shared`)
 - [x] TypeScript strict, ESLint, Prettier
-- [x] Vitest, including an integration test that syncs two realtime clients
+- [x] Vitest, including an integration test that syncs two realtime clients in `workerd` and checks persistence
+- [x] Realtime layer on Cloudflare Durable Objects ([ADR 4](adr/0004-cloudflare-durable-objects-for-realtime.md))
 - [x] GitHub Actions CI (format, lint, typecheck, test, build)
-- [ ] Deploy `apps/web` (Vercel) and `apps/realtime` (Fly.io / Railway)
+- [ ] Deploy `apps/web` (Vercel) and `apps/realtime` (Cloudflare Workers)
 
 **Done when:** every push to `main` is green and deploys automatically.
 
@@ -25,7 +26,7 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 - [ ] Yjs document structure for columns and cards (in `packages/shared`, unit tested)
 - [ ] Board UI with drag & drop (dnd-kit), including keyboard support
-- [ ] Persist documents to Postgres from the realtime server
+- [x] Persist documents in the board's Durable Object (SQLite snapshot)
 
 **Done when:** a change in window A appears instantly in window B and survives a reload.
 
@@ -37,8 +38,8 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 4: Security & offline
 
-- [ ] Signed token on the WebSocket connection, verified by the realtime server
-- [ ] Roles enforced server-side (viewers get read-only connections)
+- [ ] Signed token on the WebSocket connection, verified by the realtime Worker
+- [ ] Roles enforced server-side (viewers get read-only connections via `isReadOnly`)
 - [ ] Offline persistence (y-indexeddb) and a connection status indicator
 
 **Done when:** a viewer with a tampered client cannot change anything (covered by a test).

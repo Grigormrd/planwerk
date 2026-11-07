@@ -1,6 +1,6 @@
 # 2. Yjs and a self-hosted Hocuspocus server for realtime collaboration
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR 4](0004-cloudflare-durable-objects-for-realtime.md) (Yjs stays, Hocuspocus was replaced)
 - **Date:** 2026-11-07
 
 ## Context
