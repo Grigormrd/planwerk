@@ -1,4 +1,4 @@
-import { BOARD_ROOM_PARTY } from "@planwerk/shared";
+import { addCard, BOARD_ROOM_PARTY, DEFAULT_COLUMNS, readBoard } from "@planwerk/shared";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createTestHarness } from "wrangler";
@@ -74,16 +74,28 @@ describe("realtime worker", () => {
     expect(response.status).toBe(404);
   });
 
+  it("gives a new board the default columns, exactly once", async () => {
+    const boardId = crypto.randomUUID();
+    const alice = connect(boardId);
+    const bob = connect(boardId);
+    await Promise.all([alice.synced, bob.synced]);
+
+    expect(readBoard(alice.document).columns.map((c) => c.title)).toEqual([...DEFAULT_COLUMNS]);
+    expect(readBoard(bob.document)).toEqual(readBoard(alice.document));
+  });
+
   it("syncs a board between two clients and persists it", async () => {
     const boardId = crypto.randomUUID();
     const alice = connect(boardId);
     const bob = connect(boardId);
     await Promise.all([alice.synced, bob.synced]);
 
-    alice.document.getArray<string>("columns").push(["To do"]);
+    const todo = readBoard(alice.document).columns[0]!.id;
+    addCard(alice.document, todo, "Buy milk");
 
-    await waitFor(() => bob.document.getArray("columns").length === 1);
-    expect(bob.document.getArray<string>("columns").toArray()).toEqual(["To do"]);
+    const bobsCards = () => readBoard(bob.document).columns[0]?.cards.map((c) => c.title);
+    await waitFor(() => bobsCards()?.length === 1);
+    expect(bobsCards()).toEqual(["Buy milk"]);
 
     // When the room empties, the Durable Object writes a snapshot to its SQLite storage.
     alice.provider.destroy();
@@ -98,14 +110,17 @@ describe("realtime worker", () => {
       );
       if (tables.length === 0) return null;
       const [row] = await storage.exec<{ state: ArrayBuffer }>("SELECT state FROM snapshot");
-      return row ?? null;
+      if (!row) return null;
+      const restored = new Y.Doc();
+      Y.applyUpdate(restored, new Uint8Array(row.state));
+      return readBoard(restored);
     };
 
-    let snapshot: { state: ArrayBuffer } | null = null;
-    await waitFor(async () => (snapshot = await readSnapshot()) !== null, 15_000);
-
-    const restored = new Y.Doc();
-    Y.applyUpdate(restored, new Uint8Array(snapshot!.state));
-    expect(restored.getArray<string>("columns").toArray()).toEqual(["To do"]);
+    let snapshot: Awaited<ReturnType<typeof readSnapshot>> = null;
+    await waitFor(async () => {
+      snapshot = await readSnapshot();
+      return snapshot?.columns[0]?.cards.length === 1;
+    }, 15_000);
+    expect(snapshot!.columns[0]!.cards.map((c) => c.title)).toEqual(["Buy milk"]);
   }, 30_000);
 });

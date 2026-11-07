@@ -13,7 +13,7 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 **Done when:** every push to `main` is green and deploys automatically.
 
-## Phase 1: Auth & workspaces
+## Phase 1: Auth & workspaces ✅
 
 - [x] Postgres (Neon) + Drizzle schema: users, workspaces, memberships, invitations, boards
 - [x] Sign-in with GitHub, plus guest sessions that can be upgraded later ([ADR 5](adr/0005-auth-and-workspace-model.md))
@@ -23,11 +23,13 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 **Done when:** two accounts share a workspace and see the same boards.
 
-## Phase 2: Realtime board
+## Phase 2: Realtime board ✅
 
-- [ ] Yjs document structure for columns and cards (in `packages/shared`, unit tested)
-- [ ] Board UI with drag & drop (dnd-kit), including keyboard support
+- [x] Yjs document structure for columns and cards (in `packages/shared`, unit tested, including concurrent edits) ([ADR 6](adr/0006-board-document-model.md))
+- [x] Board UI with drag & drop (dnd-kit), including keyboard support and screen reader announcements
 - [x] Persist documents in the board's Durable Object (SQLite snapshot)
+- [x] Default columns seeded once by the server
+- [x] Connection status (live, connecting, offline)
 
 **Done when:** a change in window A appears instantly in window B and survives a reload.
 

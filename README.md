@@ -2,18 +2,21 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: sign-in, workspaces, roles and invite links work (Phase 1), the **live board (Phase 2)** is next. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: the live board works (Phase 2): cards and columns sync instantly between everyone on a board. **Presence and collaborative text (Phase 3)** are next.
+>
+> ⚠️ Until Phase 4, the realtime server does not check workspace membership yet: anyone who knows a board's id can connect to it. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
 ## Features (planned for v1)
 
-- **Live sync**: boards, columns and cards update instantly for everyone, conflict-free thanks to CRDTs
+- **Live sync** ✅: columns and cards update instantly for everyone, conflict-free thanks to CRDTs
+- **Drag & drop** ✅ with mouse, touch and keyboard, with screen reader announcements
 - **Presence**: see who is on the board and where their cursor is
 - **Collaborative rich text** for card descriptions
 - **Offline first**: keep working without a connection, changes merge on reconnect
-- **Workspaces & roles**: owner, member and read-only viewer, enforced on the server
-- **Guest demo**: try it without signing up
+- **Workspaces & roles** ✅: owner, member and read-only viewer (realtime enforcement in Phase 4)
+- **Guest sessions** ✅: try it without signing up
 
 ## Tech stack
 

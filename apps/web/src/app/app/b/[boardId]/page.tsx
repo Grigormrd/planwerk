@@ -2,7 +2,8 @@ import { canEditBoard } from "@planwerk/shared";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Card, RoleBadge, Skeleton } from "@/components/ui";
+import { LiveBoardClient } from "@/components/board/live-board-client";
+import { RoleBadge, Skeleton } from "@/components/ui";
 import { getDb } from "@/server/db";
 import { DomainError } from "@/server/errors";
 import { requireUser } from "@/server/session";
@@ -17,7 +18,7 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
   });
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href={`/app/w/${board.workspaceId}`}
@@ -29,10 +30,7 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
         <h1 className="text-2xl font-semibold tracking-tight">{board.name}</h1>
         <RoleBadge role={board.role} />
       </div>
-      <Card className="border-dashed text-center text-sm text-foreground/60">
-        The live board arrives in Phase 2.{" "}
-        {canEditBoard(board.role) ? "You will be able to edit it." : "You will see it read-only."}
-      </Card>
+      <LiveBoardClient boardId={board.id} canEdit={canEditBoard(board.role)} />
     </div>
   );
 }
