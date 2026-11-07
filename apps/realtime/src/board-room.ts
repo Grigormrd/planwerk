@@ -1,3 +1,4 @@
+import { initializeBoard } from "@planwerk/shared";
 import { YServer } from "y-partyserver";
 import * as Y from "yjs";
 
@@ -31,6 +32,10 @@ export class BoardRoom extends YServer {
       .toArray();
     if (row) {
       Y.applyUpdate(this.document, new Uint8Array(row.state));
+    } else {
+      // Only the room itself seeds a new board: if clients did it, two people
+      // opening a fresh board at once would each create a set of columns.
+      initializeBoard(this.document);
     }
   }
 
