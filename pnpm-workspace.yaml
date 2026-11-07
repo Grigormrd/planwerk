@@ -7,3 +7,6 @@ allowBuilds:
   workerd: true
   sharp: false
   unrs-resolver: false
+  # Optional peers of better-auth that we don't use (we use Drizzle + Postgres).
+  "@prisma/client": false
+  better-sqlite3: false

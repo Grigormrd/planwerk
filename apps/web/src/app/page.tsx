@@ -1,4 +1,6 @@
 import { workspaceRoles, type WorkspaceRole } from "@planwerk/shared";
+import Link from "next/link";
+import { buttonClass } from "@/components/ui";
 
 const roleDescriptions: Record<WorkspaceRole, string> = {
   owner: "Manages members, roles and boards.",
@@ -25,6 +27,14 @@ export default function Home() {
           A realtime collaborative board for teams and shared flats. Plan together, see changes
           instantly, keep working offline.
         </p>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/sign-in" className={buttonClass.primary}>
+            Try it now
+          </Link>
+          <a href="https://github.com/Grigormrd/planwerk" className={buttonClass.secondary}>
+            View the code
+          </a>
+        </div>
       </header>
 
       <section aria-labelledby="features" className="flex flex-col gap-4">

@@ -15,10 +15,11 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 1: Auth & workspaces
 
-- [ ] Postgres + Drizzle schema: users, workspaces, memberships, boards
-- [ ] Sign-in with GitHub and magic link
-- [ ] Create workspaces, invite via link, roles (owner / member / viewer)
-- [ ] Workspace overview with board list
+- [x] Postgres (Neon) + Drizzle schema: users, workspaces, memberships, invitations, boards
+- [x] Sign-in with GitHub, plus guest sessions that can be upgraded later ([ADR 5](adr/0005-auth-and-workspace-model.md))
+- [x] Create workspaces, invite via link, roles (owner / member / viewer)
+- [x] Workspace overview with board list
+- [x] Domain rules tested against real Postgres (PGlite)
 
 **Done when:** two accounts share a workspace and see the same boards.
 
@@ -52,10 +53,10 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 6: Portfolio packaging
 
-- [ ] Guest demo with seed data
+- [ ] Guest demo with seed data (guest sign-in exists since Phase 1)
 - [ ] Landing page, README with GIF, final architecture diagram
 - [ ] "What was hard" write-up
 
 ## Later
 
-Undo/redo, polls, calendar view, notifications, PWA, AI-assisted task creation.
+Magic-link sign-in (needs an email provider and domain), cleanup of old guest accounts, undo/redo, polls, calendar view, notifications, PWA, AI-assisted task creation.
