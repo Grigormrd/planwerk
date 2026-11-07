@@ -27,3 +27,13 @@ cards:   Y.Map<id, Y.Map { title, columnId, position }>
 - Reading the board requires sorting, which is negligible at board sizes.
 - Deleting a column deletes its cards in the same transaction; a concurrent move into that column is the one case handled at read time.
 - Duplicate default columns were found while testing in the browser and are now prevented by design and covered by a test.
+
+## Addendum: the seed must be persisted immediately (2026-11-08)
+
+Testing in production showed a tab that suddenly displayed **no columns**, while a reload showed the full board. The cause was a chain of three behaviours:
+
+1. `onLoad()` runs before y-partyserver attaches its debounced save, so the seeded columns were only kept in memory until someone edited the board.
+2. With hibernation, an idle room is evicted from memory. On wake-up it found no snapshot and seeded again, with a new Yjs client id but the same fixed column ids.
+3. Yjs resolved the conflicting map keys by deleting one version. After a wake-up the server only sends a sync request to clients, not its own state, so the client received the **deletion** of its columns but never the replacements.
+
+The room now writes the snapshot right after seeding, so a woken room loads the original seed and never seeds again. A regression test checks that a snapshot exists before anyone edits.

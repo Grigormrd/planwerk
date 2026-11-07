@@ -84,6 +84,25 @@ describe("realtime worker", () => {
     expect(readBoard(bob.document)).toEqual(readBoard(alice.document));
   });
 
+  it("persists the seeded columns immediately, before anyone edits", async () => {
+    // Regression: the seed used to live only in memory. After hibernation the
+    // room seeded again, and clients received deletions for "their" columns
+    // without the replacements, leaving them with an empty board.
+    const boardId = crypto.randomUUID();
+    const alice = connect(boardId);
+    await alice.synced;
+
+    const storage = await harness
+      .getWorker()
+      .getDurableObjectStorage("BoardRoom", { name: boardId });
+    const [row] = await storage.exec<{ state: ArrayBuffer }>("SELECT state FROM snapshot");
+    expect(row).toBeDefined();
+
+    const restored = new Y.Doc();
+    Y.applyUpdate(restored, new Uint8Array(row!.state));
+    expect(readBoard(restored)).toEqual(readBoard(alice.document));
+  });
+
   it("syncs a board between two clients and persists it", async () => {
     const boardId = crypto.randomUUID();
     const alice = connect(boardId);
