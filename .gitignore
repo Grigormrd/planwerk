@@ -25,3 +25,8 @@ test-results/
 Thumbs.db
 .idea/
 *.log
+
+# cloudflare
+.wrangler/
+.dev.vars*
+worker-configuration.d.ts

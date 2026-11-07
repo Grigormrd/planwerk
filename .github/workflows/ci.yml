@@ -29,3 +29,39 @@ jobs:
       - run: pnpm format:check
 
       - run: pnpm check
+
+  deploy-realtime:
+    name: Deploy realtime Worker
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: deploy-realtime
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Skip when Cloudflare is not configured
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        run: echo "::notice::Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID to enable deploys."
+
+      - if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        uses: actions/checkout@v7
+
+      - if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        uses: pnpm/action-setup@v6
+
+      - if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: pnpm install --frozen-lockfile
+
+      # `run deploy` on purpose: plain `pnpm deploy` is a built-in pnpm command.
+      - if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: pnpm --filter @planwerk/realtime run deploy

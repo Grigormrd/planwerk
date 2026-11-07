@@ -4,7 +4,14 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["**/dist/**", "**/coverage/**", "**/.turbo/**", "apps/web/**"]),
+  globalIgnores([
+    "**/dist/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    "**/.wrangler/**",
+    "**/worker-configuration.d.ts",
+    "apps/web/**",
+  ]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

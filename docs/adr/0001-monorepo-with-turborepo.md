@@ -12,13 +12,13 @@ Planwerk consists of a Next.js web app and a separate long-running WebSocket ser
 Use a single repository with pnpm workspaces:
 
 - `apps/web`: Next.js
-- `apps/realtime`: Hocuspocus server
+- `apps/realtime`: realtime server (since [ADR 4](0004-cloudflare-durable-objects-for-realtime.md) a Cloudflare Worker)
 - `packages/shared`: domain types, Zod schemas, permission rules
 
-`packages/shared` ships TypeScript source. Next.js compiles it via `transpilePackages`; the realtime server bundles it with tsup. Turborepo runs tasks across packages and caches the results.
+`packages/shared` ships TypeScript source. Next.js compiles it via `transpilePackages`; Wrangler bundles it into the realtime Worker. Turborepo runs tasks across packages and caches the results.
 
 ## Consequences
 
 - One pull request can change the client, the server and the shared contract together.
 - Type errors in the contract show up in both apps immediately.
-- The realtime server needs a bundling step instead of plain `tsc`, because the shared package is not prebuilt.
+- Both apps need a bundler (Next.js, Wrangler) instead of plain `tsc`, because the shared package is not prebuilt.
