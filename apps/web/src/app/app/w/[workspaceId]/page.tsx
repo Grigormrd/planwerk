@@ -79,7 +79,7 @@ async function Members({ workspaceId, role }: { workspaceId: string; role: Works
         {members.map((m) => (
           <li key={m.userId} className="flex flex-wrap items-center gap-3 py-3">
             <Avatar name={m.name} image={m.image} />
-            <span className="flex min-w-0 flex-1 flex-col">
+            <span className="flex min-w-32 flex-1 flex-col">
               <span className="truncate text-sm font-medium">
                 {m.name}
                 {m.userId === user.id && <span className="text-foreground/50"> (you)</span>}

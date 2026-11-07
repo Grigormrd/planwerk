@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { ActionForm, SubmitButton } from "@/components/action-form";
 import { buttonClass, RoleBadge, Skeleton } from "@/components/ui";
@@ -13,6 +14,8 @@ export const metadata: Metadata = { title: "Invitation · Planwerk" };
 
 async function Invitation({ params }: PageProps<"/invite/[token]">) {
   const { token } = await params;
+  // Expiry checks use the current time, so this must render per request.
+  await connection();
   const [invite, user] = await Promise.all([
     previewInvitation(getDb(), token).catch((error) => {
       if (error instanceof DomainError) return null;
