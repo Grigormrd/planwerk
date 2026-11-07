@@ -30,7 +30,11 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
         <h1 className="text-2xl font-semibold tracking-tight">{board.name}</h1>
         <RoleBadge role={board.role} />
       </div>
-      <LiveBoardClient boardId={board.id} canEdit={canEditBoard(board.role)} />
+      <LiveBoardClient
+        boardId={board.id}
+        canEdit={canEditBoard(board.role)}
+        me={{ id: user.id, name: user.name, image: user.image ?? null }}
+      />
     </div>
   );
 }

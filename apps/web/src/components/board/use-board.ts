@@ -3,6 +3,7 @@
 import { BOARD_ROOM_PARTY, readBoard, type BoardSnapshot } from "@planwerk/shared";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import YProvider from "y-partyserver/provider";
+import { Awareness } from "y-protocols/awareness";
 import * as Y from "yjs";
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";
@@ -35,9 +36,11 @@ const EMPTY_BOARD: BoardSnapshot = { columns: [] };
  * them in the background and reconnects automatically.
  */
 export function useBoard(boardId: string) {
-  const [{ doc, store }] = useState(() => {
+  // The awareness object lives as long as the doc, so presence state set by
+  // components survives provider reconnects.
+  const [{ doc, store, awareness }] = useState(() => {
     const doc = new Y.Doc();
-    return { doc, store: createBoardStore(doc) };
+    return { doc, store: createBoardStore(doc), awareness: new Awareness(doc) };
   });
   const [status, setStatus] = useState<ConnectionStatus>(
     REALTIME_HOST ? "connecting" : "disconnected",
@@ -57,7 +60,7 @@ export function useBoard(boardId: string) {
     // connect would revive it. Creating it on the next tick lets an
     // immediate cleanup cancel it before it ever starts.
     const start = setTimeout(() => {
-      provider = new YProvider(host, boardId, doc, { party: BOARD_ROOM_PARTY });
+      provider = new YProvider(host, boardId, doc, { party: BOARD_ROOM_PARTY, awareness });
       provider.on("status", ({ status }: { status: ConnectionStatus }) => setStatus(status));
       provider.on("synced", (synced: boolean) => {
         if (synced) setHasSynced(true);
@@ -68,9 +71,9 @@ export function useBoard(boardId: string) {
       clearTimeout(start);
       provider?.destroy();
     };
-  }, [boardId, doc]);
+  }, [boardId, doc, awareness]);
 
   const board = useSyncExternalStore(store.subscribe, store.getSnapshot, () => EMPTY_BOARD);
 
-  return { doc, board, status, hasSynced, getBoard: store.getSnapshot };
+  return { doc, awareness, board, status, hasSynced, getBoard: store.getSnapshot };
 }

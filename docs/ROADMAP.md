@@ -35,7 +35,7 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 3: Presence & collaborative text
 
-- [ ] Avatars of everyone on the board, live cursors
+- [x] Avatars of everyone on the board, live cursors (Yjs awareness, one colour per user)
 - [ ] Card detail view with collaborative rich text (Tiptap + Yjs)
 - [ ] Card fields: assignee, due date, labels
 
