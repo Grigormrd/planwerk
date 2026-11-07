@@ -2,7 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the foundation (Phase 0) is live, **Phase 1 (auth & workspaces)** is next. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: sign-in, workspaces, roles and invite links work (Phase 1), the **live board (Phase 2)** is next. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
@@ -22,9 +22,11 @@
 | Monorepo | pnpm workspaces, Turborepo                               |
 | Web app  | Next.js (App Router), React, TypeScript (strict)         |
 | Styling  | Tailwind CSS                                             |
+| Auth     | Better Auth (GitHub OAuth, guest sessions)               |
+| Database | Postgres on Neon, Drizzle ORM                            |
 | Realtime | Yjs (CRDT) on Cloudflare Durable Objects (y-partyserver) |
 | Shared   | Zod schemas and domain logic shared by client and server |
-| Testing  | Vitest, Playwright (planned)                             |
+| Testing  | Vitest with PGlite (real Postgres in-process), workerd   |
 | Quality  | ESLint, Prettier, GitHub Actions CI, Dependabot          |
 
 ## Architecture
@@ -62,12 +64,21 @@ docs/
 
 ## Getting started
 
-Requirements: Node.js 24+, pnpm.
+Requirements: Node.js 24+, pnpm, and access to the Vercel project (for the database credentials).
 
 ```bash
 pnpm install
+cd apps/web
+vercel link          # once
+vercel env pull      # writes apps/web/.env.local
+pnpm db:migrate
+cd ../..
 pnpm dev
 ```
+
+See [`.env.example`](.env.example) for all variables. GitHub sign-in is optional locally; "Try it as a guest" always works.
+
+Tests need no credentials at all: database tests run against PGlite, the realtime tests against a local `workerd`.
 
 - Web app: http://localhost:3000
 - Realtime Worker: ws://localhost:8787 (health check: http://localhost:8787/health)
