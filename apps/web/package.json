@@ -26,6 +26,7 @@
     "react-dom": "19.3.1",
     "server-only": "^0.0.1",
     "y-partyserver": "^2.2.0",
+    "y-protocols": "^1.0.7",
     "yjs": "^13.6.33",
     "zod": "^4.6.7"
   },

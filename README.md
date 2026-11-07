@@ -12,7 +12,7 @@
 
 - **Live sync** ✅: columns and cards update instantly for everyone, conflict-free thanks to CRDTs
 - **Drag & drop** ✅ with mouse, touch and keyboard, with screen reader announcements
-- **Presence**: see who is on the board and where their cursor is
+- **Presence** ✅: see who is on the board and where their cursor is
 - **Collaborative rich text** for card descriptions
 - **Offline first**: keep working without a connection, changes merge on reconnect
 - **Workspaces & roles** ✅: owner, member and read-only viewer (realtime enforcement in Phase 4)

@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui";
 import { CardPreview } from "./board-card";
 import { BoardColumn, type ColumnActions } from "./board-column";
 import { AddItemForm } from "./inline-edit";
+import { PresenceAvatars, RemoteCursors, useCursorBroadcast, usePresence } from "./presence";
 import { useBoard, type ConnectionStatus } from "./use-board";
 
 const statusLabel: Record<ConnectionStatus, string> = {
@@ -45,8 +46,25 @@ function StatusIndicator({ status }: { status: ConnectionStatus }) {
   );
 }
 
-export function LiveBoard({ boardId, canEdit }: { boardId: string; canEdit: boolean }) {
-  const { doc, board: snapshot, status, hasSynced, getBoard } = useBoard(boardId);
+export interface BoardViewer {
+  id: string;
+  name: string;
+  image?: string | null;
+}
+
+export function LiveBoard({
+  boardId,
+  canEdit,
+  me,
+}: {
+  boardId: string;
+  canEdit: boolean;
+  me: BoardViewer;
+}) {
+  const { doc, awareness, board: snapshot, status, hasSynced, getBoard } = useBoard(boardId);
+  const peers = usePresence(awareness, me);
+  const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
+  useCursorBroadcast(awareness, scrollContainer);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   /**
@@ -190,7 +208,8 @@ export function LiveBoard({ boardId, canEdit }: { boardId: string; canEdit: bool
   }
 
   const columns = (
-    <div className="flex items-start gap-4 overflow-x-auto pb-4">
+    <div ref={setScrollContainer} className="relative flex items-start gap-4 overflow-x-auto pb-4">
+      <RemoteCursors peers={peers} />
       {snapshot.columns.map((column, index) => (
         <BoardColumn
           key={column.id}
@@ -218,6 +237,9 @@ export function LiveBoard({ boardId, canEdit }: { boardId: string; canEdit: bool
       <div className="flex items-center gap-4">
         <StatusIndicator status={status} />
         {!canEdit && <span className="text-xs text-foreground/60">View only</span>}
+        <div className="ml-auto">
+          <PresenceAvatars peers={peers} me={me} />
+        </div>
       </div>
       {canEdit ? (
         <DndContext
