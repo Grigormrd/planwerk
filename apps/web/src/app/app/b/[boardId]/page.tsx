@@ -27,11 +27,11 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
       <div className="flex flex-wrap items-center gap-3">
         <Link
           href={`/app/w/${board.workspaceId}`}
-          className="text-sm text-foreground/50 hover:text-foreground"
+          className="text-sm text-foreground/60 hover:text-foreground"
         >
           {board.workspaceName}
         </Link>
-        <span className="text-foreground/30">/</span>
+        <span className="text-foreground/60">/</span>
         <h1 className="text-2xl font-semibold tracking-tight">{board.name}</h1>
         <RoleBadge role={board.role} />
       </div>

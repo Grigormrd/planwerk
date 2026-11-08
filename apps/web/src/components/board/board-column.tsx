@@ -62,15 +62,15 @@ function ColumnHeader({
           column.title
         )}
       </h2>
-      <span className="text-xs tabular-nums text-foreground/40">{column.cards.length}</span>
+      <span className="text-xs tabular-nums text-foreground/60">{column.cards.length}</span>
       {actions && (
-        <span className="flex opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+        <span className="flex [@media(hover:hover)]:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
           <button
             type="button"
             disabled={index === 0}
             onClick={() => actions.moveColumn(column.id, index - 1)}
             aria-label={`Move column ${column.title} left`}
-            className="rounded px-1.5 text-foreground/50 hover:bg-foreground/5 disabled:invisible"
+            className="rounded px-1.5 text-foreground/60 hover:bg-foreground/5 disabled:invisible"
           >
             ←
           </button>
@@ -79,7 +79,7 @@ function ColumnHeader({
             disabled={index === count - 1}
             onClick={() => actions.moveColumn(column.id, index + 1)}
             aria-label={`Move column ${column.title} right`}
-            className="rounded px-1.5 text-foreground/50 hover:bg-foreground/5 disabled:invisible"
+            className="rounded px-1.5 text-foreground/60 hover:bg-foreground/5 disabled:invisible"
           >
             →
           </button>
@@ -93,7 +93,7 @@ function ColumnHeader({
               if (window.confirm(message)) actions.deleteColumn(column.id);
             }}
             aria-label={`Delete column ${column.title}`}
-            className="rounded px-1.5 text-foreground/50 hover:bg-red-500/10 hover:text-red-600"
+            className="rounded px-1.5 text-foreground/60 hover:bg-red-500/10 hover:text-red-600"
           >
             ✕
           </button>

@@ -32,7 +32,7 @@ async function WorkspaceList() {
           >
             <span className="flex flex-col">
               <span className="font-medium">{ws.name}</span>
-              <span className="text-xs text-foreground/50">
+              <span className="text-xs text-foreground/60">
                 {ws.memberCount} {ws.memberCount === 1 ? "member" : "members"}
               </span>
             </span>

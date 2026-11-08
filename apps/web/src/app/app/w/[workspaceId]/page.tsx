@@ -82,9 +82,9 @@ async function Members({ workspaceId, role }: { workspaceId: string; role: Works
             <span className="flex min-w-32 flex-1 flex-col">
               <span className="truncate text-sm font-medium">
                 {m.name}
-                {m.userId === user.id && <span className="text-foreground/50"> (you)</span>}
+                {m.userId === user.id && <span className="text-foreground/60"> (you)</span>}
               </span>
-              {m.isGuest && <span className="text-xs text-foreground/50">Guest</span>}
+              {m.isGuest && <span className="text-xs text-foreground/60">Guest</span>}
             </span>
             {isOwner ? (
               <ActionForm action={changeRoleAction} className="flex items-center gap-2">
@@ -160,10 +160,10 @@ async function WorkspaceContent({ params }: PageProps<"/app/w/[workspaceId]">) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/app" className="text-sm text-foreground/50 hover:text-foreground">
+        <Link href="/app" className="text-sm text-foreground/60 hover:text-foreground">
           Workspaces
         </Link>
-        <span className="text-foreground/30">/</span>
+        <span className="text-foreground/60">/</span>
         <h1 className="text-2xl font-semibold tracking-tight">{ws.name}</h1>
         <RoleBadge role={ws.role} />
       </div>

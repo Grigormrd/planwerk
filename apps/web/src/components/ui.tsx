@@ -23,15 +23,15 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 
 export function SectionTitle({ children, ...props }: ComponentProps<"h2">) {
   return (
-    <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-foreground/50" {...props}>
+    <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-foreground/60" {...props}>
       {children}
     </h2>
   );
 }
 
 const roleStyles: Record<WorkspaceRole, string> = {
-  owner: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  member: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
+  owner: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  member: "bg-sky-500/15 text-sky-800 dark:text-sky-300",
   viewer: "bg-foreground/10 text-foreground/70",
 };
 

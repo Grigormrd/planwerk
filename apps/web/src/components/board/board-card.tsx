@@ -34,7 +34,7 @@ export function CardContent({ card, members }: { card: Card; members: BoardMembe
         <span className="flex items-center gap-2 text-xs text-foreground/60">
           {card.dueDate && (
             <span
-              className={`rounded px-1.5 py-0.5 ${overdue ? "bg-red-500/15 font-medium text-red-700 dark:text-red-300" : "bg-foreground/5"}`}
+              className={`rounded px-1.5 py-0.5 ${overdue ? "bg-red-500/15 font-medium text-red-800 dark:text-red-300" : "bg-foreground/5"}`}
             >
               <span className="sr-only">{overdue ? "Overdue, due " : "Due "}</span>
               {formatDue(card.dueDate)}
@@ -134,12 +134,12 @@ export function SortableCard({
       >
         <CardContent card={card} members={members} />
       </button>
-      <span className="flex shrink-0 opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+      <span className="flex shrink-0 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
         <button
           type="button"
           onClick={onOpen}
           aria-label={`Open card ${card.title}`}
-          className="rounded p-1.5 text-xs text-foreground/50 hover:bg-foreground/5 hover:text-foreground"
+          className="rounded p-1.5 text-xs text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
         >
           Open
         </button>
@@ -147,7 +147,7 @@ export function SortableCard({
           type="button"
           onClick={onDelete}
           aria-label={`Delete card ${card.title}`}
-          className="rounded p-1.5 text-xs text-foreground/50 hover:bg-red-500/10 hover:text-red-600"
+          className="rounded p-1.5 text-xs text-foreground/60 hover:bg-red-500/10 hover:text-red-600"
         >
           ✕
         </button>

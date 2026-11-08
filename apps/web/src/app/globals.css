@@ -25,6 +25,12 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+/* Placeholders need readable contrast too (Tailwind's default is 50%). */
+input::placeholder,
+textarea::placeholder {
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
+}
+
 /* Card description (Tiptap) */
 .description-editor > * + * {
   margin-top: 0.5em;
@@ -62,7 +68,7 @@ body {
   float: left;
   height: 0;
   pointer-events: none;
-  color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
 
 /* Other people's text cursors in a description */
