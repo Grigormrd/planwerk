@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
+    "jose": "^6.2.15",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0",
     "wrangler": "^4.158.0"

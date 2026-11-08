@@ -6,6 +6,12 @@
   "observability": {
     "enabled": true,
   },
+  "vars": {
+    // Public half of the key the web app signs board tokens with. Not a secret.
+    // Empty means every connection is refused. Set by `pnpm realtime-keys production`
+    // in apps/web; local development overrides it in .dev.vars.
+    "REALTIME_TOKEN_PUBLIC_KEY": "",
+  },
   "durable_objects": {
     "bindings": [
       {

@@ -31,6 +31,7 @@ const statusLabel: Record<ConnectionStatus, string> = {
   connected: "Live",
   connecting: "Connecting…",
   disconnected: "Offline, changes will sync when you're back",
+  denied: "You no longer have access to this board",
 };
 
 function StatusIndicator({ status }: { status: ConnectionStatus }) {
@@ -201,6 +202,22 @@ export function LiveBoard({
     ? snapshot.columns.find((c) => c.cards.some((card) => card.id === openCardId))
     : undefined;
   const openCard = openColumn?.cards.find((c) => c.id === openCardId);
+
+  if (status === "denied") {
+    return (
+      <div className="flex flex-col items-start gap-3 rounded-xl border border-foreground/10 p-6">
+        <p role="alert" className="font-medium">
+          You no longer have access to this board.
+        </p>
+        <p className="text-sm text-foreground/60">
+          You may have been removed from the workspace, or your session ended.
+        </p>
+        <a href="/app" className="text-sm underline">
+          Back to your workspaces
+        </a>
+      </div>
+    );
+  }
 
   if (!hasSynced) {
     return (

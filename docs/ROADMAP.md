@@ -41,8 +41,8 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 4: Security & offline
 
-- [ ] Signed token on the WebSocket connection, verified by the realtime Worker
-- [ ] Roles enforced server-side (viewers get read-only connections via `isReadOnly`)
+- [x] Signed token on the WebSocket connection, verified by the realtime Worker ([ADR 7](adr/0007-board-access-tokens.md))
+- [x] Roles enforced server-side (viewers get read-only connections via `isReadOnly`), covered by a test with a tampered viewer client
 - [ ] Offline persistence (y-indexeddb) and a connection status indicator
 
 **Done when:** a viewer with a tampered client cannot change anything (covered by a test).
