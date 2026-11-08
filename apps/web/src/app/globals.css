@@ -24,3 +24,66 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* Card description (Tiptap) */
+.description-editor > * + * {
+  margin-top: 0.5em;
+}
+.description-editor h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.description-editor h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.description-editor ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.description-editor ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.description-editor blockquote {
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 20%, transparent);
+  padding-left: 0.75rem;
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+}
+.description-editor code {
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  padding: 0.1em 0.3em;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875em;
+}
+.description-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: color-mix(in srgb, var(--foreground) 40%, transparent);
+}
+
+/* Other people's text cursors in a description */
+.collaboration-carets__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 2px solid;
+  pointer-events: none;
+  word-break: normal;
+}
+.collaboration-carets__label {
+  position: absolute;
+  top: -1.4em;
+  left: -2px;
+  border-radius: 0.25rem 0.25rem 0.25rem 0;
+  padding: 0.05rem 0.35rem;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+  user-select: none;
+}

@@ -29,8 +29,8 @@ export interface PresenceUser {
   image?: string | null;
 }
 
-/** Cursor position in board content coordinates (independent of scrolling). */
-export interface PresenceCursor {
+/** Mouse pointer position in board content coordinates (independent of scrolling). */
+export interface PresencePointer {
   x: number;
   y: number;
 }
@@ -38,5 +38,6 @@ export interface PresenceCursor {
 /** What each client publishes through Yjs awareness. */
 export interface PresenceState {
   user: PresenceUser;
-  cursor: PresenceCursor | null;
+  // Not "cursor": Tiptap's collaboration caret uses that field for the text selection.
+  pointer: PresencePointer | null;
 }

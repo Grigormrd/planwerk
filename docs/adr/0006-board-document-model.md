@@ -37,3 +37,12 @@ Testing in production showed a tab that suddenly displayed **no columns**, while
 3. Yjs resolved the conflicting map keys by deleting one version. After a wake-up the server only sends a sync request to clients, not its own state, so the client received the **deletion** of its columns but never the replacements.
 
 The room now writes the snapshot right after seeding, so a woken room loads the original seed and never seeds again. A regression test checks that a snapshot exists before anyone edits.
+
+## Addendum: card details (2026-11-08)
+
+Phase 3 added fields to cards. They follow the same rule: concurrent edits must merge without losing anything that can be kept.
+
+- **Assignee and due date** are plain fields on the card map (last writer wins). A due date is validated as an ISO date.
+- **Labels** are one field per label (`label:red`, `label:blue`, …), not a list. Two people toggling different labels at the same time keep both changes.
+- **Descriptions** are a root `Y.XmlFragment` per card (`description:<cardId>`), bound to Tiptap. A fragment nested inside the card map would have to be created on first use, and two people opening an old card at the same time would each create one, with one losing their text. Root types are merged by name, so this cannot happen. Root types cannot be deleted, so deleting a card clears its description instead.
+- **Presence fields:** Tiptap's collaboration caret stores the text selection in the awareness field `cursor`, so the board's mouse pointer moved to `pointer`. Both features share the same `user` object.

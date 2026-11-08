@@ -21,6 +21,8 @@ import { useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui";
 import { CardPreview } from "./board-card";
 import { BoardColumn, type ColumnActions } from "./board-column";
+import { CardDetails } from "./card-details";
+import type { BoardMember } from "./card-meta";
 import { AddItemForm } from "./inline-edit";
 import { PresenceAvatars, RemoteCursors, useCursorBroadcast, usePresence } from "./presence";
 import { useBoard, type ConnectionStatus } from "./use-board";
@@ -56,16 +58,19 @@ export function LiveBoard({
   boardId,
   canEdit,
   me,
+  members,
 }: {
   boardId: string;
   canEdit: boolean;
   me: BoardViewer;
+  members: BoardMember[];
 }) {
   const { doc, awareness, board: snapshot, status, hasSynced, getBoard } = useBoard(boardId);
   const peers = usePresence(awareness, me);
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
   useCursorBroadcast(awareness, scrollContainer);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  const [openCardId, setOpenCardId] = useState<string | null>(null);
 
   /**
    * Up/Down use dnd-kit's default. Left/Right jump to the neighbouring column
@@ -136,7 +141,6 @@ export function LiveBoard({
       canEdit
         ? {
             addCard: (columnId, title) => board.addCard(doc, columnId, title),
-            renameCard: (cardId, title) => board.renameCard(doc, cardId, title),
             deleteCard: (cardId) => board.deleteCard(doc, cardId),
             renameColumn: (columnId, title) => board.renameColumn(doc, columnId, title),
             deleteColumn: (columnId) => board.deleteColumn(doc, columnId),
@@ -192,6 +196,12 @@ export function LiveBoard({
     ? snapshot.columns.flatMap((c) => c.cards).find((c) => c.id === activeId)
     : undefined;
 
+  // If someone deletes the open card, its column lookup fails and the dialog closes.
+  const openColumn = openCardId
+    ? snapshot.columns.find((c) => c.cards.some((card) => card.id === openCardId))
+    : undefined;
+  const openCard = openColumn?.cards.find((c) => c.id === openCardId);
+
   if (!hasSynced) {
     return (
       <div className="flex flex-col gap-4">
@@ -216,6 +226,8 @@ export function LiveBoard({
           column={column}
           index={index}
           count={snapshot.columns.length}
+          members={members}
+          onOpenCard={setOpenCardId}
           actions={actions}
         />
       ))}
@@ -256,11 +268,29 @@ export function LiveBoard({
         >
           {columns}
           <DragOverlay>
-            {activeCard ? <CardPreview title={activeCard.title} lifted /> : null}
+            {activeCard ? <CardPreview card={activeCard} members={members} /> : null}
           </DragOverlay>
         </DndContext>
       ) : (
         columns
+      )}
+      {openCard && openColumn && (
+        <CardDetails
+          key={openCard.id}
+          doc={doc}
+          awareness={awareness}
+          card={openCard}
+          columnTitle={openColumn.title}
+          members={members}
+          user={{
+            id: me.id,
+            name: me.name,
+            image: me.image ?? null,
+            color: board.presenceColor(me.id),
+          }}
+          canEdit={canEdit}
+          onClose={() => setOpenCardId(null)}
+        />
       )}
     </div>
   );

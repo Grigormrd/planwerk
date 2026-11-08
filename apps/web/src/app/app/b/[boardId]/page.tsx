@@ -7,7 +7,7 @@ import { RoleBadge, Skeleton } from "@/components/ui";
 import { getDb } from "@/server/db";
 import { DomainError } from "@/server/errors";
 import { requireUser } from "@/server/session";
-import { getBoard } from "@/server/workspaces";
+import { getBoard, listMembers } from "@/server/workspaces";
 
 async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
   const { boardId } = await params;
@@ -16,6 +16,11 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
     if (error instanceof DomainError || /uuid/i.test(String(error))) notFound();
     throw error;
   });
+  const members = (await listMembers(getDb(), user.id, board.workspaceId)).map((m) => ({
+    userId: m.userId,
+    name: m.name,
+    image: m.image,
+  }));
 
   return (
     <div className="flex flex-col gap-6">
@@ -34,6 +39,7 @@ async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
         boardId={board.id}
         canEdit={canEditBoard(board.role)}
         me={{ id: user.id, name: user.name, image: user.image ?? null }}
+        members={members}
       />
     </div>
   );

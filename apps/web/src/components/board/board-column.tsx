@@ -4,12 +4,12 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { BoardColumn as Column } from "@planwerk/shared";
 import { useState } from "react";
-import { CardPreview, SortableCard } from "./board-card";
+import { ReadOnlyCard, SortableCard } from "./board-card";
+import type { BoardMember } from "./card-meta";
 import { AddItemForm, InlineEdit } from "./inline-edit";
 
 export interface ColumnActions {
   addCard: (columnId: string, title: string) => void;
-  renameCard: (cardId: string, title: string) => void;
   deleteCard: (cardId: string) => void;
   renameColumn: (columnId: string, title: string) => void;
   deleteColumn: (columnId: string) => void;
@@ -107,11 +107,15 @@ export function BoardColumn({
   column,
   index,
   count,
+  members,
+  onOpenCard,
   actions,
 }: {
   column: Column;
   index: number;
   count: number;
+  members: BoardMember[];
+  onOpenCard: (cardId: string) => void;
   /** Omitted for read-only boards. */
   actions?: ColumnActions | undefined;
 }) {
@@ -135,12 +139,13 @@ export function BoardColumn({
                 key={card.id}
                 card={card}
                 columnId={column.id}
-                onRename={(title) => actions.renameCard(card.id, title)}
+                members={members}
+                onOpen={() => onOpenCard(card.id)}
                 onDelete={() => actions.deleteCard(card.id)}
               />
             ) : (
               <li key={card.id}>
-                <CardPreview title={card.title} />
+                <ReadOnlyCard card={card} members={members} onOpen={() => onOpenCard(card.id)} />
               </li>
             ),
           )}

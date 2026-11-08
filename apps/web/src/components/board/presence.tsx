@@ -2,7 +2,7 @@
 
 import {
   presenceColor,
-  type PresenceCursor,
+  type PresencePointer,
   type PresenceState,
   type PresenceUser,
 } from "@planwerk/shared";
@@ -52,7 +52,7 @@ export function usePresence(awareness: Awareness, me: Omit<PresenceUser, "color"
 
   useEffect(() => {
     const user: PresenceUser = { id, name, image: image ?? null, color: presenceColor(id) };
-    awareness.setLocalState({ user, cursor: null } satisfies PresenceState);
+    awareness.setLocalState({ user, pointer: null } satisfies PresenceState);
     return () => awareness.setLocalState(null);
   }, [awareness, id, name, image]);
 
@@ -66,17 +66,17 @@ export function usePresence(awareness: Awareness, me: Omit<PresenceUser, "color"
  */
 export function useCursorBroadcast(awareness: Awareness, element: HTMLElement | null) {
   const frame = useRef<number | null>(null);
-  const pending = useRef<PresenceCursor | null>(null);
+  const pending = useRef<PresencePointer | null>(null);
 
   useEffect(() => {
     if (!element) return;
 
     const publish = () => {
       frame.current = null;
-      awareness.setLocalStateField("cursor", pending.current);
+      awareness.setLocalStateField("pointer", pending.current);
     };
-    const schedule = (cursor: PresenceCursor | null) => {
-      pending.current = cursor;
+    const schedule = (pointer: PresencePointer | null) => {
+      pending.current = pointer;
       frame.current ??= requestAnimationFrame(publish);
     };
     const onMove = (event: PointerEvent) => {
@@ -146,12 +146,12 @@ export function PresenceAvatars({ peers, me }: { peers: Peer[]; me: Omit<Presenc
 export function RemoteCursors({ peers }: { peers: Peer[] }) {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-visible">
-      {peers.map(({ clientId, user, cursor }) =>
-        cursor ? (
+      {peers.map(({ clientId, user, pointer }) =>
+        pointer ? (
           <div
             key={clientId}
             className="absolute left-0 top-0 transition-transform duration-75 ease-linear"
-            style={{ transform: `translate(${cursor.x}px, ${cursor.y}px)` }}
+            style={{ transform: `translate(${pointer.x}px, ${pointer.y}px)` }}
           >
             <svg width="16" height="20" viewBox="0 0 16 20" className="drop-shadow">
               <path

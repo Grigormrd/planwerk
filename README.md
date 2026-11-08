@@ -2,7 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the live board works (Phase 2): cards and columns sync instantly between everyone on a board. **Presence and collaborative text (Phase 3)** are next.
+> 🚧 Work in progress: the live board, presence and card details work (Phases 2 and 3). **Security and offline support (Phase 4)** are next.
 >
 > ⚠️ Until Phase 4, the realtime server does not check workspace membership yet: anyone who knows a board's id can connect to it. See the [roadmap](docs/ROADMAP.md).
 
@@ -13,7 +13,7 @@
 - **Live sync** ✅: columns and cards update instantly for everyone, conflict-free thanks to CRDTs
 - **Drag & drop** ✅ with mouse, touch and keyboard, with screen reader announcements
 - **Presence** ✅: see who is on the board and where their cursor is
-- **Collaborative rich text** for card descriptions
+- **Card details** ✅: collaborative rich-text descriptions, assignee, due date and labels
 - **Offline first**: keep working without a connection, changes merge on reconnect
 - **Workspaces & roles** ✅: owner, member and read-only viewer (realtime enforcement in Phase 4)
 - **Guest sessions** ✅: try it without signing up
