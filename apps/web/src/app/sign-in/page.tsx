@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui";
 import { isGitHubConfigured } from "@/server/auth";
+import { getCurrentUser } from "@/server/session";
 import { SignInOptions } from "./sign-in-options";
 
 export const metadata: Metadata = { title: "Sign in · Planwerk" };
 
-/** Only allow redirects to paths on this site. */
+/** Only allow redirects to paths on this site, and never back to sign-in. */
 function safeNext(value: string | string[] | undefined): string {
   const next = Array.isArray(value) ? value[0] : value;
-  return next?.startsWith("/") && !next.startsWith("//") ? next : "/app";
+  const isLocalPath = next?.startsWith("/") && !next.startsWith("//");
+  return isLocalPath && !next!.startsWith("/sign-in") ? next! : "/app";
 }
 
 async function Options({ searchParams }: PageProps<"/sign-in">) {
   const next = safeNext((await searchParams).next);
+  // Already signed in (including as a guest): signing in again would fail,
+  // and guests cannot start a second guest session. Go straight on.
+  if (await getCurrentUser()) redirect(next);
   return <SignInOptions next={next} gitHubEnabled={isGitHubConfigured()} />;
 }
 

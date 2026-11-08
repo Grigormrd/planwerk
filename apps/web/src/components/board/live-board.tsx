@@ -30,7 +30,7 @@ import { useBoard, type ConnectionStatus } from "./use-board";
 const statusLabel: Record<ConnectionStatus, string> = {
   connected: "Live",
   connecting: "Connecting…",
-  disconnected: "Offline, changes will sync when you're back",
+  disconnected: "Offline. Changes are saved on this device and sync when you're back.",
   denied: "You no longer have access to this board",
 };
 
@@ -66,7 +66,7 @@ export function LiveBoard({
   me: BoardViewer;
   members: BoardMember[];
 }) {
-  const { doc, awareness, board: snapshot, status, hasSynced, getBoard } = useBoard(boardId);
+  const { doc, awareness, board: snapshot, status, isReady, getBoard } = useBoard(boardId, me.id);
   const peers = usePresence(awareness, me);
   const [scrollContainer, setScrollContainer] = useState<HTMLDivElement | null>(null);
   useCursorBroadcast(awareness, scrollContainer);
@@ -219,7 +219,7 @@ export function LiveBoard({
     );
   }
 
-  if (!hasSynced) {
+  if (!isReady) {
     return (
       <div className="flex flex-col gap-4">
         <StatusIndicator status={status} />

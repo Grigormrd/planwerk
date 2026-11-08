@@ -2,12 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { buttonClass } from "@/components/ui";
+import { clearOfflineData } from "@/components/board/offline-storage";
 import { authClient } from "@/lib/auth-client";
 
 export function UserMenu({ isGuest, gitHubEnabled }: { isGuest: boolean; gitHubEnabled: boolean }) {
   const router = useRouter();
 
   async function signOut() {
+    // Boards cached for offline use must not outlive the session.
+    await clearOfflineData();
     await authClient.signOut();
     router.push("/");
     router.refresh();

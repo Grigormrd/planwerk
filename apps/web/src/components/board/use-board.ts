@@ -2,9 +2,11 @@
 
 import { BOARD_ROOM_PARTY, readBoard, type BoardSnapshot } from "@planwerk/shared";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { clearDocument, IndexeddbPersistence } from "y-indexeddb";
 import YProvider from "y-partyserver/provider";
 import { Awareness } from "y-protocols/awareness";
 import * as Y from "yjs";
+import { offlineDocName, rememberOfflineDoc } from "./offline-storage";
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected" | "denied";
 
@@ -46,7 +48,7 @@ async function fetchRealtimeToken(boardId: string): Promise<TokenResult> {
  * local Y.Doc first, so the UI never waits for the network; the provider syncs
  * them in the background and reconnects automatically.
  */
-export function useBoard(boardId: string) {
+export function useBoard(boardId: string, userId: string) {
   // The awareness object lives as long as the doc, so presence state set by
   // components survives provider reconnects.
   const [{ doc, store, awareness }] = useState(() => {
@@ -57,6 +59,24 @@ export function useBoard(boardId: string) {
     REALTIME_HOST ? "connecting" : "disconnected",
   );
   const [hasSynced, setHasSynced] = useState(false);
+  const [hasLocalCopy, setHasLocalCopy] = useState(false);
+
+  // Keep a copy on this device, so edits made while offline survive closing
+  // or reloading the tab and sync on the next connection.
+  useEffect(() => {
+    const name = offlineDocName(userId, boardId);
+    const persistence = new IndexeddbPersistence(name, doc);
+    rememberOfflineDoc(name);
+    let active = true;
+    void persistence.whenSynced.then(() => {
+      // Only boards opened before have something worth showing offline.
+      if (active && readBoard(doc).columns.length > 0) setHasLocalCopy(true);
+    });
+    return () => {
+      active = false;
+      void persistence.destroy();
+    };
+  }, [boardId, userId, doc]);
 
   useEffect(() => {
     if (!REALTIME_HOST) {
@@ -82,6 +102,8 @@ export function useBoard(boardId: string) {
           if ("denied" in result) {
             denied = true;
             setStatus("denied");
+            // No access any more: remove the copy on this device as well.
+            void clearDocument(offlineDocName(userId, boardId));
             // Stop the reconnect loop; an empty token is refused by the Worker.
             queueMicrotask(() => provider?.disconnect());
             return { token: "" };
@@ -101,9 +123,19 @@ export function useBoard(boardId: string) {
       clearTimeout(start);
       provider?.destroy();
     };
-  }, [boardId, doc, awareness]);
+  }, [boardId, userId, doc, awareness]);
 
   const board = useSyncExternalStore(store.subscribe, store.getSnapshot, () => EMPTY_BOARD);
 
-  return { doc, awareness, board, status, hasSynced, getBoard: store.getSnapshot };
+  return {
+    doc,
+    awareness,
+    board,
+    status,
+    // Show the board once the server synced it, or right away from the copy
+    // on this device when the server cannot be reached.
+    isReady: hasSynced || hasLocalCopy,
+    hasSynced,
+    getBoard: store.getSnapshot,
+  };
 }

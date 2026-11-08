@@ -284,6 +284,9 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
+      y-indexeddb:
+        specifier: ^9.0.12
+        version: 9.0.12(yjs@13.6.33)
       y-partyserver:
         specifier: ^2.2.0
         version: 2.2.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(yjs@13.6.33)
@@ -324,6 +327,9 @@ importers:
       eslint-config-next:
         specifier: 16.4.5
         version: 16.4.5(@typescript-eslint/parser@8.72.1(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3)
+      fake-indexeddb:
+        specifier: ^6.2.7
+        version: 6.2.7
       tailwindcss:
         specifier: ^4
         version: 4.3.5
@@ -2673,6 +2679,10 @@ packages:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
 
+  fake-indexeddb@6.2.7:
+    resolution: {integrity: sha512-g0ghQ+BmU3CSZaHup5FigEAAtCmtNyxkrmID7OAeK2qONHghw1aQ2l2T1RxmfhP1H1tEXVRWArUTGVCk5832ww==}
+    engines: {node: '>=18'}
+
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
 
@@ -3968,6 +3978,12 @@ packages:
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
+
+  y-indexeddb@9.0.12:
+    resolution: {integrity: sha512-9oCFRSPPzBK7/w5vOkJBaVCQZKHXB/v6SIT+WYhnJxlEC61juqG0hBrAf+y3gmSMLFLwICNH9nQ53uscuse6Hg==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      yjs: ^13.0.0
 
   y-partyserver@2.2.0:
     resolution: {integrity: sha512-AIsTEZ3jPicBe3VHO5c/VdSGSaFr0J9cAGj6+sgRL/RnXLTNSkP3oQXyXf1y8hQNeXv/j9zYDT5NnRv2k1eMGA==}
@@ -6066,6 +6082,8 @@ snapshots:
 
   expect-type@1.4.0: {}
 
+  fake-indexeddb@6.2.7: {}
+
   fast-deep-equal@3.1.3: {}
 
   fast-equals@5.4.5: {}
@@ -7491,6 +7509,11 @@ snapshots:
 
   xtend@4.0.2:
     optional: true
+
+  y-indexeddb@9.0.12(yjs@13.6.33):
+    dependencies:
+      lib0: 0.2.119
+      yjs: 13.6.33
 
   y-partyserver@2.2.0(@cloudflare/workers-types@4.20260702.1)(partyserver@0.5.10(@cloudflare/workers-types@4.20260702.1))(yjs@13.6.33):
     dependencies:
