@@ -10,7 +10,10 @@ import { DomainError } from "@/server/errors";
 import { getCurrentUser } from "@/server/session";
 import { previewInvitation } from "@/server/workspaces";
 
-export const metadata: Metadata = { title: "Invitation · Planwerk" };
+export const metadata: Metadata = {
+  title: "Invitation · Planwerk",
+  robots: { index: false, follow: false },
+};
 
 async function Invitation({ params }: PageProps<"/invite/[token]">) {
   const { token } = await params;

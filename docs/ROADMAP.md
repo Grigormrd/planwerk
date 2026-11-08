@@ -47,17 +47,18 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 **Done when:** a viewer with a tampered client cannot change anything (covered by a test).
 
-## Phase 5: Quality & polish
+## Phase 5: Quality & polish ✅
 
 - [x] Playwright end-to-end tests, including a two-browser sync test, viewers, non-members and touch screens (Postgres in Docker, in CI as a service container)
 - [x] Accessibility pass: axe-core on every page in light and dark mode; contrast fixed, touch-friendly card actions, sign-in works before hydration
-- [ ] Empty / loading / error states
-- [ ] Lighthouse pass, dark mode
+- [x] Error and not-found pages, page titles, empty and loading states
+- [x] Lighthouse pass (public pages: performance 98–99, accessibility, best practices and SEO 100), dark mode checked with axe, link preview image, robots.txt and sitemap
 
 ## Phase 6: Portfolio packaging
 
 - [ ] Guest demo with seed data (guest sign-in exists since Phase 1)
-- [ ] Landing page, README with GIF, final architecture diagram
+- [x] Landing page explaining features and architecture
+- [ ] README with GIF, final architecture diagram
 - [ ] "What was hard" write-up
 
 ## Later

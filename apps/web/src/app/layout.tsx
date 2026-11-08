@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { siteDescription, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Planwerk",
-  description: "A realtime collaborative board for teams and shared flats.",
+  description: siteDescription,
+  openGraph: {
+    title: "Planwerk",
+    description: siteDescription,
+    url: "/",
+    siteName: "Planwerk",
+    type: "website",
+  },
+  twitter: { card: "summary_large_image", title: "Planwerk", description: siteDescription },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
