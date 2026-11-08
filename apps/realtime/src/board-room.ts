@@ -1,6 +1,8 @@
-import { initializeBoard } from "@planwerk/shared";
+import { canEditBoard, initializeBoard, WorkspaceRole } from "@planwerk/shared";
+import type { Connection, ConnectionContext } from "partyserver";
 import { YServer } from "y-partyserver";
 import * as Y from "yjs";
+import { ROLE_HEADER, USER_HEADER } from "./auth-headers";
 
 /**
  * One Durable Object instance per board. Every client editing the same board
@@ -17,6 +19,31 @@ export class BoardRoom extends YServer {
     debounceMaxWait: 10_000,
     timeout: 5000,
   };
+
+  /**
+   * The Worker verified the token and put the role in a header. Keep it in
+   * the connection state, which survives hibernation.
+   */
+  override onConnect(connection: Connection, ctx: ConnectionContext) {
+    const role = WorkspaceRole.safeParse(ctx.request.headers.get(ROLE_HEADER));
+    const userId = ctx.request.headers.get(USER_HEADER);
+    connection.setState((previous: unknown) => ({
+      ...(typeof previous === "object" && previous !== null ? previous : {}),
+      role: role.success ? role.data : null,
+      userId,
+    }));
+    return super.onConnect(connection, ctx);
+  }
+
+  /**
+   * Document updates from read-only connections are dropped by y-partyserver;
+   * presence (awareness) still goes through. Anything but a role that may
+   * edit is read-only, including a missing role.
+   */
+  override isReadOnly(connection: Connection): boolean {
+    const state = connection.state as { role?: WorkspaceRole | null } | null;
+    return !state?.role || !canEditBoard(state.role);
+  }
 
   override async onLoad(): Promise<void> {
     const sql = this.ctx.storage.sql;

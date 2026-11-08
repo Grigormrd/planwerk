@@ -2,9 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the live board, presence and card details work (Phases 2 and 3). **Security and offline support (Phase 4)** are next.
->
-> ⚠️ Until Phase 4, the realtime server does not check workspace membership yet: anyone who knows a board's id can connect to it. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: the live board, presence, card details and access control work (Phases 2–4a). **Offline support** is next. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
@@ -15,7 +13,7 @@
 - **Presence** ✅: see who is on the board and where their cursor is
 - **Card details** ✅: collaborative rich-text descriptions, assignee, due date and labels
 - **Offline first**: keep working without a connection, changes merge on reconnect
-- **Workspaces & roles** ✅: owner, member and read-only viewer (realtime enforcement in Phase 4)
+- **Workspaces & roles** ✅: owner, member and read-only viewer, enforced by the realtime server with signed board tokens ([ADR 7](docs/adr/0007-board-access-tokens.md))
 - **Guest sessions** ✅: try it without signing up
 
 ## Tech stack
@@ -75,6 +73,7 @@ cd apps/web
 vercel link          # once
 vercel env pull      # writes apps/web/.env.local
 pnpm db:migrate
+pnpm realtime-keys local   # key pair for realtime board tokens
 cd ../..
 pnpm dev
 ```
