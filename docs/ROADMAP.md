@@ -39,11 +39,11 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 - [x] Card detail view with collaborative rich text (Tiptap + Yjs), including other people's text cursors
 - [x] Card fields: assignee, due date (overdue highlighted), labels
 
-## Phase 4: Security & offline
+## Phase 4: Security & offline ✅
 
 - [x] Signed token on the WebSocket connection, verified by the realtime Worker ([ADR 7](adr/0007-board-access-tokens.md))
 - [x] Roles enforced server-side (viewers get read-only connections via `isReadOnly`), covered by a test with a tampered viewer client
-- [ ] Offline persistence (y-indexeddb) and a connection status indicator
+- [x] Offline persistence (y-indexeddb) and a connection status indicator ([ADR 8](adr/0008-offline-copy-in-indexeddb.md)); local copies are removed on sign-out and when access is revoked
 
 **Done when:** a viewer with a tampered client cannot change anything (covered by a test).
 
@@ -61,4 +61,4 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Later
 
-Magic-link sign-in (needs an email provider and domain), cleanup of old guest accounts, undo/redo, polls, calendar view, notifications, PWA, AI-assisted task creation.
+Loading the app without any network (service worker / PWA), magic-link sign-in (needs an email provider and domain), cleanup of old guest accounts, undo/redo, polls, calendar view, notifications, PWA, AI-assisted task creation.

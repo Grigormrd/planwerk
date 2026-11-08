@@ -2,7 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the live board, presence, card details and access control work (Phases 2–4a). **Offline support** is next. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: the live board, presence, card details, access control and offline editing work (Phases 0–4). **Quality and polish (Phase 5)** are next. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
@@ -12,7 +12,7 @@
 - **Drag & drop** ✅ with mouse, touch and keyboard, with screen reader announcements
 - **Presence** ✅: see who is on the board and where their cursor is
 - **Card details** ✅: collaborative rich-text descriptions, assignee, due date and labels
-- **Offline first**: keep working without a connection, changes merge on reconnect
+- **Offline editing** ✅: if the connection drops, keep working; changes survive a reload and merge when you're back ([ADR 8](docs/adr/0008-offline-copy-in-indexeddb.md))
 - **Workspaces & roles** ✅: owner, member and read-only viewer, enforced by the realtime server with signed board tokens ([ADR 7](docs/adr/0007-board-access-tokens.md))
 - **Guest sessions** ✅: try it without signing up
 
