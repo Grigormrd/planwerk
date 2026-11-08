@@ -3,9 +3,12 @@
 // Runs only for production deployments on Vercel and for local builds with a
 // database configured. Preview deployments skip it so that an unmerged pull
 // request can never change the production schema.
-import { Pool } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import { migrate } from "drizzle-orm/neon-serverless/migrator";
+import { Pool as NeonPool } from "@neondatabase/serverless";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-serverless";
+import { migrate as migrateNeon } from "drizzle-orm/neon-serverless/migrator";
+import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
+import { migrate as migratePg } from "drizzle-orm/node-postgres/migrator";
+import pg from "pg";
 
 const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
 const vercelEnv = process.env.VERCEL_ENV;
@@ -19,9 +22,17 @@ if (vercelEnv && vercelEnv !== "production") {
   process.exit(0);
 }
 
-const pool = new Pool({ connectionString: url });
+// Neon needs its WebSocket driver; a local Postgres (end-to-end tests) uses pg.
+const { hostname } = new URL(url);
+const local = ["localhost", "127.0.0.1", "::1"].includes(hostname);
+
+const pool = local
+  ? new pg.Pool({ connectionString: url })
+  : new NeonPool({ connectionString: url });
 try {
-  await migrate(drizzle({ client: pool }), { migrationsFolder: "drizzle" });
+  const config = { migrationsFolder: "drizzle" };
+  if (local) await migratePg(drizzlePg({ client: pool }), config);
+  else await migrateNeon(drizzleNeon({ client: pool }), config);
   console.log("[migrate] Database is up to date.");
 } finally {
   await pool.end();

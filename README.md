@@ -2,7 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the live board, presence, card details, access control and offline editing work (Phases 0–4). **Quality and polish (Phase 5)** are next. See the [roadmap](docs/ROADMAP.md).
+> 🚧 Work in progress: the live board, presence, card details, access control and offline editing work (Phases 0–4), with end-to-end and accessibility tests (Phase 5). **Polish** is next. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
@@ -27,7 +27,7 @@
 | Database | Postgres on Neon, Drizzle ORM                            |
 | Realtime | Yjs (CRDT) on Cloudflare Durable Objects (y-partyserver) |
 | Shared   | Zod schemas and domain logic shared by client and server |
-| Testing  | Vitest with PGlite (real Postgres in-process), workerd   |
+| Testing  | Vitest, PGlite, workerd, Playwright, axe-core            |
 | Quality  | ESLint, Prettier, GitHub Actions CI, Dependabot          |
 
 ## Architecture
@@ -103,6 +103,25 @@ The realtime Worker runs locally in `workerd` via Wrangler, so no Cloudflare acc
 
 - **Web app** → Vercel (project root: `apps/web`), deployed on every push; pull requests get preview deployments
 - **Realtime Worker** → Cloudflare Workers, deployed by GitHub Actions after green checks on every push to `main` (needs the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets)
+
+## Testing
+
+Each layer is tested where it runs, without mocks:
+
+| Layer                      | Tool                           | What it covers                                                                           |
+| -------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Board model, tokens        | Vitest                         | CRDT operations incl. concurrent edits, token signing and verification                   |
+| Workspaces, roles, invites | Vitest + PGlite                | Domain rules against real Postgres with the production migrations                        |
+| Realtime Worker            | Vitest + workerd               | Sync between real WebSocket clients, persistence, token checks, a tampered viewer client |
+| Whole app                  | Playwright + Postgres (Docker) | Two browsers on one board, keyboard drag and drop, viewers, non-members, touch screens   |
+| Accessibility              | axe-core in Playwright         | WCAG 2.1 A/AA checks on every page, in light and dark mode                               |
+
+```bash
+pnpm check   # lint, typecheck, unit and integration tests, build
+pnpm e2e     # end-to-end tests; starts Postgres in Docker, the Worker and a production build
+```
+
+The end-to-end tests refuse to run against anything but a local database.
 
 ## License
 

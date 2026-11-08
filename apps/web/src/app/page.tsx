@@ -40,7 +40,7 @@ export default function Home() {
       <section aria-labelledby="features" className="flex flex-col gap-4">
         <h2
           id="features"
-          className="text-sm font-medium uppercase tracking-wider text-foreground/50"
+          className="text-sm font-medium uppercase tracking-wider text-foreground/60"
         >
           What&apos;s coming
         </h2>
@@ -54,7 +54,7 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="roles" className="flex flex-col gap-4">
-        <h2 id="roles" className="text-sm font-medium uppercase tracking-wider text-foreground/50">
+        <h2 id="roles" className="text-sm font-medium uppercase tracking-wider text-foreground/60">
           Roles
         </h2>
         <dl className="grid gap-3 sm:grid-cols-3">

@@ -30,3 +30,7 @@ Thumbs.db
 .wrangler/
 .dev.vars*
 worker-configuration.d.ts
+
+# end-to-end tests
+.next-e2e/
+apps/web/e2e/.generated/

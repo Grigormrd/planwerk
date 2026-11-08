@@ -17,7 +17,7 @@ import { labelStyles, type BoardMember } from "./card-meta";
 import { DescriptionEditor } from "./description-editor";
 import { InlineEdit } from "./inline-edit";
 
-const fieldLabel = "text-xs font-medium uppercase tracking-wider text-foreground/50";
+const fieldLabel = "text-xs font-medium uppercase tracking-wider text-foreground/60";
 
 /**
  * Card details in a native modal dialog: focus is trapped inside, Escape
@@ -79,7 +79,7 @@ export function CardDetails({
       <div className="flex flex-col gap-6 p-6">
         <header className="flex items-start gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-foreground/50">in {columnTitle}</p>
+            <p className="text-xs text-foreground/60">in {columnTitle}</p>
             {editingTitle && canEdit ? (
               <InlineEdit
                 multiline

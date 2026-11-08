@@ -27,7 +27,7 @@ export function ActionForm({
     <form action={formAction} className={className}>
       {children}
       {state?.error && (
-        <p role="alert" className="basis-full text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="basis-full text-sm text-red-700 dark:text-red-400">
           {state.error}
         </p>
       )}

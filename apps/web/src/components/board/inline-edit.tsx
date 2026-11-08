@@ -80,7 +80,7 @@ export function AddItemForm({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full rounded-md px-2 py-1.5 text-left text-sm text-foreground/50 transition hover:bg-foreground/5 hover:text-foreground"
+        className="w-full rounded-md px-2 py-1.5 text-left text-sm text-foreground/60 transition hover:bg-foreground/5 hover:text-foreground"
       >
         + {label}
       </button>

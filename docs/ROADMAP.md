@@ -49,8 +49,9 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 5: Quality & polish
 
-- [ ] Playwright end-to-end tests, including a two-browser sync test
-- [ ] Accessibility pass, empty / loading / error states
+- [x] Playwright end-to-end tests, including a two-browser sync test, viewers, non-members and touch screens (Postgres in Docker, in CI as a service container)
+- [x] Accessibility pass: axe-core on every page in light and dark mode; contrast fixed, touch-friendly card actions, sign-in works before hydration
+- [ ] Empty / loading / error states
 - [ ] Lighthouse pass, dark mode
 
 ## Phase 6: Portfolio packaging

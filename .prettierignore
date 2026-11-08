@@ -5,3 +5,6 @@ coverage
 .turbo
 worker-configuration.d.ts
 .wrangler
+.next-e2e
+playwright-report
+test-results
