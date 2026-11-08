@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { canEditBoard } from "@planwerk/shared";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,8 @@ import { getDb } from "@/server/db";
 import { DomainError } from "@/server/errors";
 import { requireUser } from "@/server/session";
 import { getBoard, listMembers } from "@/server/workspaces";
+
+export const metadata: Metadata = { title: "Board · Planwerk" };
 
 async function BoardContent({ params }: PageProps<"/app/b/[boardId]">) {
   const { boardId } = await params;

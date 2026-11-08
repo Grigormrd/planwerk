@@ -2,7 +2,7 @@
 
 **A realtime collaborative board for teams and shared flats.** Plan together, see every change instantly, keep working offline.
 
-> 🚧 Work in progress: the live board, presence, card details, access control and offline editing work (Phases 0–4), with end-to-end and accessibility tests (Phase 5). **Polish** is next. See the [roadmap](docs/ROADMAP.md).
+> Phases 0–5 are done: live board, presence, card details, access control, offline editing, end-to-end and accessibility tests. **Portfolio packaging (Phase 6)** is next. See the [roadmap](docs/ROADMAP.md).
 
 **Live:** [planwerk-ten.vercel.app](https://planwerk-ten.vercel.app) · Realtime health check: [planwerk-realtime.plan-werk.workers.dev/health](https://planwerk-realtime.plan-werk.workers.dev/health)
 
@@ -122,6 +122,8 @@ pnpm e2e     # end-to-end tests; starts Postgres in Docker, the Worker and a pro
 ```
 
 The end-to-end tests refuse to run against anything but a local database.
+
+Lighthouse on the public pages (production): performance 98–99, accessibility 100, best practices 100, SEO 100.
 
 ## License
 

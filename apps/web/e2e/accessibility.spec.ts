@@ -4,6 +4,9 @@ import { addCard, cardIn, createBoard, createWorkspace, newGuest, openBoard } fr
 
 /** Fails on any WCAG 2.1 A/AA violation that axe can detect automatically. */
 async function expectNoViolations(page: Page) {
+  // After client-side navigation Next.js sets the title a moment after the
+  // content; scan the settled page.
+  await expect(page).toHaveTitle(/\S/);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
@@ -13,7 +16,11 @@ async function expectNoViolations(page: Page) {
     help: v.help,
     nodes: v.nodes.slice(0, 8).map((n) => `${n.target.join(" ")} :: ${n.any[0]?.message ?? ""}`),
   }));
-  expect(summary, JSON.stringify(summary, null, 2)).toEqual([]);
+  expect(
+    summary,
+    `${page.url()} (title: "${await page.title()}")
+${JSON.stringify(summary, null, 2)}`,
+  ).toEqual([]);
 }
 
 for (const scheme of ["light", "dark"] as const) {
@@ -24,6 +31,8 @@ for (const scheme of ["light", "dark"] as const) {
       await page.goto("/");
       await expectNoViolations(page);
       await page.goto("/sign-in");
+      await expectNoViolations(page);
+      await page.goto("/this-page-does-not-exist");
       await expectNoViolations(page);
     });
 

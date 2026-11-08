@@ -1,9 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { Avatar } from "@/components/ui";
 import { isGitHubConfigured } from "@/server/auth";
 import { requireUser } from "@/server/session";
 import { UserMenu } from "./user-menu";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 async function CurrentUser() {
   const user = await requireUser();

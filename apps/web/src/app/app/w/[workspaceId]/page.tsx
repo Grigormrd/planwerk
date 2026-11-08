@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { canEditBoard, canManageMembers, type WorkspaceRole } from "@planwerk/shared";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +16,8 @@ import {
   revokeInviteAction,
 } from "../../actions";
 import { InviteForm } from "./invite-form";
+
+export const metadata: Metadata = { title: "Workspace · Planwerk" };
 
 const dateFormat = new Intl.DateTimeFormat("en", { dateStyle: "medium" });
 
