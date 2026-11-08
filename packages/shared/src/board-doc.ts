@@ -1,12 +1,15 @@
 import { generateKeyBetween } from "fractional-indexing";
 import * as Y from "yjs";
+import { z } from "zod";
 import { CardTitle, ColumnTitle } from "./names";
 
 /**
  * The collaborative board lives in one Y.Doc:
  *
  *   columns: Y.Map<id, Y.Map { title, position }>
- *   cards:   Y.Map<id, Y.Map { title, columnId, position }>
+ *   cards:   Y.Map<id, Y.Map { title, columnId, position,
+ *                              assigneeId?, dueDate?, "label:<name>"? }>
+ *   description:<cardId>: Y.XmlFragment (rich text, one root per card)
  *
  * Cards are not stored in per-column arrays. Each card holds its column id
  * and a fractional position key, and a move overwrites those two fields.
@@ -19,9 +22,19 @@ import { CardTitle, ColumnTitle } from "./names";
 // package does not depend on DOM or Node type definitions.
 declare const crypto: { randomUUID(): string };
 
+export const CARD_LABELS = ["red", "orange", "yellow", "green", "blue", "purple"] as const;
+export type CardLabel = (typeof CARD_LABELS)[number];
+
+export const DueDate = z.iso.date();
+
 export interface BoardCard {
   id: string;
   title: string;
+  assigneeId: string | null;
+  /** ISO date, e.g. "2026-11-30". */
+  dueDate: string | null;
+  labels: CardLabel[];
+  hasDescription: boolean;
 }
 
 export interface BoardColumn {
@@ -99,17 +112,24 @@ export function readBoard(doc: Y.Doc): BoardSnapshot {
   const cardList = [...cards.entries()]
     .map(([id, card]) => ({
       id,
-      title: card.get("title") ?? "",
       columnId: card.get("columnId") ?? "",
       position: card.get("position") ?? "",
+      card: {
+        id,
+        title: card.get("title") ?? "",
+        assigneeId: card.get("assigneeId") ?? null,
+        dueDate: card.get("dueDate") ?? null,
+        labels: CARD_LABELS.filter((label) => card.get(`label:${label}`) === "1"),
+        hasDescription: hasDescription(doc, id),
+      } satisfies BoardCard,
     }))
     .sort(byPosition);
 
-  for (const card of cardList) {
+  for (const entry of cardList) {
     // A card moved into a column that someone deleted at the same time stays
     // visible in the first column instead of disappearing.
-    const column = columnById.get(card.columnId) ?? columnList[0];
-    column?.cards.push({ id: card.id, title: card.title });
+    const column = columnById.get(entry.columnId) ?? columnList[0];
+    column?.cards.push(entry.card);
   }
 
   return { columns: columnList };
@@ -166,7 +186,7 @@ export function deleteColumn(doc: Y.Doc, columnId: string): void {
   const { columns, cards } = maps(doc);
   doc.transact(() => {
     for (const [id, card] of cards.entries()) {
-      if (card.get("columnId") === columnId) cards.delete(id);
+      if (card.get("columnId") === columnId) deleteCard(doc, id);
     }
     columns.delete(columnId);
   });
@@ -198,7 +218,14 @@ export function renameCard(doc: Y.Doc, cardId: string, title: string): void {
 }
 
 export function deleteCard(doc: Y.Doc, cardId: string): void {
-  maps(doc).cards.delete(cardId);
+  doc.transact(() => {
+    maps(doc).cards.delete(cardId);
+    // Root types cannot be removed, so clear the description's content.
+    if (doc.share.has(descriptionKey(cardId))) {
+      const description = cardDescription(doc, cardId);
+      description.delete(0, description.length);
+    }
+  });
 }
 
 /**
@@ -213,4 +240,51 @@ export function moveCard(doc: Y.Doc, cardId: string, toColumnId: string, toIndex
     card.set("columnId", toColumnId);
     card.set("position", positionAt(others, clamp(toIndex, others.length)));
   });
+}
+
+// ---------------------------------------------------------------------------
+// Card details
+// ---------------------------------------------------------------------------
+
+const descriptionKey = (cardId: string) => `description:${cardId}`;
+
+/**
+ * The card's rich-text description. It is a root type named after the card:
+ * Yjs merges root types by name, so two people opening a card at the same
+ * time can never create competing descriptions, even for cards that existed
+ * before descriptions did.
+ */
+export function cardDescription(doc: Y.Doc, cardId: string): Y.XmlFragment {
+  return doc.getXmlFragment(descriptionKey(cardId));
+}
+
+function hasDescription(doc: Y.Doc, cardId: string): boolean {
+  // Look the root up without creating it; remote roots may still be untyped.
+  const root = doc.share.get(descriptionKey(cardId)) as { _length?: number } | undefined;
+  return (root?._length ?? 0) > 0;
+}
+
+/** Sets or clears the person responsible for a card. */
+export function setCardAssignee(doc: Y.Doc, cardId: string, userId: string | null): void {
+  const card = requireEntry(maps(doc).cards, cardId, "Card");
+  if (userId) card.set("assigneeId", userId);
+  else card.delete("assigneeId");
+}
+
+/** Sets or clears the due date (ISO date, e.g. "2026-11-30"). */
+export function setCardDueDate(doc: Y.Doc, cardId: string, date: string | null): void {
+  const card = requireEntry(maps(doc).cards, cardId, "Card");
+  if (date) card.set("dueDate", DueDate.parse(date));
+  else card.delete("dueDate");
+}
+
+/**
+ * Turns a label on or off. Each label is its own field, so two people
+ * toggling different labels at the same time keep both changes.
+ */
+export function setCardLabel(doc: Y.Doc, cardId: string, label: CardLabel, enabled: boolean): void {
+  const card = requireEntry(maps(doc).cards, cardId, "Card");
+  if (!CARD_LABELS.includes(label)) throw new Error(`Unknown label ${label}`);
+  if (enabled) card.set(`label:${label}`, "1");
+  else card.delete(`label:${label}`);
 }

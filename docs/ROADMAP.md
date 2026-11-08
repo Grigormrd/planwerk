@@ -33,11 +33,11 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 **Done when:** a change in window A appears instantly in window B and survives a reload.
 
-## Phase 3: Presence & collaborative text
+## Phase 3: Presence & collaborative text ✅
 
 - [x] Avatars of everyone on the board, live cursors (Yjs awareness, one colour per user)
-- [ ] Card detail view with collaborative rich text (Tiptap + Yjs)
-- [ ] Card fields: assignee, due date, labels
+- [x] Card detail view with collaborative rich text (Tiptap + Yjs), including other people's text cursors
+- [x] Card fields: assignee, due date (overdue highlighted), labels
 
 ## Phase 4: Security & offline
 
