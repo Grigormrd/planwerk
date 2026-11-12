@@ -308,6 +308,7 @@ export async function getBoard(db: Database, userId: string, boardId: string) {
       name: board.name,
       workspaceId: board.workspaceId,
       workspaceName: workspace.name,
+      template: board.template,
       role: membership.role,
     })
     .from(board)
@@ -319,6 +320,48 @@ export async function getBoard(db: Database, userId: string, boardId: string) {
     .where(eq(board.id, boardId));
   if (!row) throw notFound("Board");
   return row;
+}
+
+// ---------------------------------------------------------------------------
+// Demo
+// ---------------------------------------------------------------------------
+
+export const DEMO_WORKSPACE_NAME = "Demo team";
+export const DEMO_BOARD_NAME = "Product launch";
+
+/**
+ * The user's demo board: the one they already have in a workspace they own,
+ * otherwise a new workspace with a board that the realtime room fills with
+ * example cards on first open.
+ */
+export async function openDemoBoard(db: Database, userId: string) {
+  const [existing] = await db
+    .select({ id: board.id, workspaceId: board.workspaceId })
+    .from(board)
+    .innerJoin(
+      membership,
+      and(
+        eq(membership.workspaceId, board.workspaceId),
+        eq(membership.userId, userId),
+        eq(membership.role, "owner"),
+      ),
+    )
+    .where(eq(board.template, "demo"))
+    .orderBy(asc(board.createdAt))
+    .limit(1);
+  if (existing) return existing;
+
+  return db.transaction(async (tx) => {
+    const [ws] = await tx.insert(workspace).values({ name: DEMO_WORKSPACE_NAME }).returning();
+    if (!ws) throw new Error("Insert returned no row");
+    await tx.insert(membership).values({ workspaceId: ws.id, userId, role: "owner" });
+    const [created] = await tx
+      .insert(board)
+      .values({ workspaceId: ws.id, name: DEMO_BOARD_NAME, createdBy: userId, template: "demo" })
+      .returning({ id: board.id, workspaceId: board.workspaceId });
+    if (!created) throw new Error("Insert returned no row");
+    return created;
+  });
 }
 
 // ---------------------------------------------------------------------------

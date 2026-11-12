@@ -1,8 +1,14 @@
-import { canEditBoard, initializeBoard, WorkspaceRole } from "@planwerk/shared";
+import {
+  applyBoardTemplate,
+  BoardTemplate,
+  canEditBoard,
+  initializeBoard,
+  WorkspaceRole,
+} from "@planwerk/shared";
 import type { Connection, ConnectionContext } from "partyserver";
 import { YServer } from "y-partyserver";
 import * as Y from "yjs";
-import { ROLE_HEADER, USER_HEADER } from "./auth-headers";
+import { ROLE_HEADER, TEMPLATE_HEADER, USER_HEADER } from "./auth-headers";
 
 /**
  * One Durable Object instance per board. Every client editing the same board
@@ -32,6 +38,20 @@ export class BoardRoom extends YServer {
       role: role.success ? role.data : null,
       userId,
     }));
+
+    // A board created from a template (the demo) gets its cards from the
+    // room on the first connection, before the client's initial sync, so
+    // they arrive together with the columns. The creator gets the assigned
+    // cards when they may edit.
+    const template = BoardTemplate.safeParse(ctx.request.headers.get(TEMPLATE_HEADER));
+    if (template.success) {
+      const ownerId = role.success && canEditBoard(role.data) ? userId : null;
+      const today = new Date().toISOString().slice(0, 10);
+      if (applyBoardTemplate(this.document, template.data, { ownerId, today })) {
+        this.saveSnapshot();
+      }
+    }
+
     return super.onConnect(connection, ctx);
   }
 

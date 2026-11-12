@@ -4,5 +4,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["src/**/*.test.ts"],
+    // The first test in a file starts PGlite and runs the migrations, which
+    // can take longer than the default 10 s on shared CI runners.
+    hookTimeout: 30_000,
   },
 });

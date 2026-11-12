@@ -1,5 +1,6 @@
 import { importJWK, jwtVerify, SignJWT, type CryptoKey, type JWK } from "jose";
 import { WorkspaceRole } from "./permissions";
+import { BoardTemplate } from "./templates";
 
 /**
  * Short-lived tokens that let a browser join one board on the realtime
@@ -17,6 +18,8 @@ export interface BoardTokenClaims {
   userId: string;
   boardId: string;
   role: WorkspaceRole;
+  /** Starting content the room applies on first use (see templates.ts). */
+  template?: BoardTemplate | undefined;
 }
 
 const keyCache = new Map<string, Promise<CryptoKey | Uint8Array>>();
@@ -37,7 +40,11 @@ export async function signBoardToken(
   now = new Date(),
 ): Promise<string> {
   const issuedAt = Math.floor(now.getTime() / 1000);
-  return new SignJWT({ board: claims.boardId, role: claims.role })
+  return new SignJWT({
+    board: claims.boardId,
+    role: claims.role,
+    ...(claims.template && { template: claims.template }),
+  })
     .setProtectedHeader({ alg: ALGORITHM })
     .setIssuer(ISSUER)
     .setAudience(AUDIENCE)
@@ -68,7 +75,13 @@ export async function verifyBoardToken(
     if (payload.board !== boardId || typeof payload.sub !== "string" || !role.success) {
       return null;
     }
-    return { userId: payload.sub, boardId, role: role.data };
+    const template = BoardTemplate.safeParse(payload.template);
+    return {
+      userId: payload.sub,
+      boardId,
+      role: role.data,
+      ...(template.success && { template: template.data }),
+    };
   } catch {
     return null;
   }

@@ -1,6 +1,6 @@
 import { parseBoardId, parseJwk, verifyBoardToken } from "@planwerk/shared";
 import { routePartykitRequest, type Lobby } from "partyserver";
-import { ROLE_HEADER, USER_HEADER } from "./auth-headers";
+import { ROLE_HEADER, TEMPLATE_HEADER, USER_HEADER } from "./auth-headers";
 
 export { BoardRoom } from "./board-room";
 
@@ -8,8 +8,9 @@ export { BoardRoom } from "./board-room";
  * Runs before a request reaches a board's Durable Object:
  * - only board rooms with a valid id exist,
  * - the caller needs a token signed by the web app for exactly this board.
- * The verified role and user travel to the room in headers that this Worker
- * sets itself, overwriting anything the client sent under those names.
+ * The verified role, user and board template travel to the room in headers
+ * that this Worker sets itself, overwriting anything the client sent under
+ * those names.
  */
 async function authorize(
   request: Request,
@@ -30,6 +31,8 @@ async function authorize(
   const headers = new Headers(request.headers);
   headers.set(ROLE_HEADER, claims.role);
   headers.set(USER_HEADER, claims.userId);
+  if (claims.template) headers.set(TEMPLATE_HEADER, claims.template);
+  else headers.delete(TEMPLATE_HEADER);
   return new Request(request, { headers });
 }
 

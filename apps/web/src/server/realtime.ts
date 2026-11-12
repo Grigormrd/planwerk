@@ -17,7 +17,7 @@ export async function issueRealtimeToken(
   const board = await getBoard(db, userId, boardId);
   const token = await signBoardToken(
     privateKey,
-    { userId, boardId: board.id, role: board.role },
+    { userId, boardId: board.id, role: board.role, template: board.template ?? undefined },
     now,
   );
   return {

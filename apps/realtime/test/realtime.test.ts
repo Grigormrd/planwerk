@@ -4,6 +4,7 @@ import {
   DEFAULT_COLUMNS,
   readBoard,
   signBoardToken,
+  type BoardTemplate,
   type WorkspaceRole,
 } from "@planwerk/shared";
 import { exportJWK, generateKeyPair } from "jose";
@@ -29,8 +30,12 @@ const harness = createTestHarness({
   ],
 });
 
-const tokenFor = (boardId: string, role: WorkspaceRole = "member", now?: Date) =>
-  signBoardToken(privateKey, { userId: `user-${role}`, boardId, role }, now);
+const tokenFor = (
+  boardId: string,
+  role: WorkspaceRole = "member",
+  now?: Date,
+  template?: BoardTemplate,
+) => signBoardToken(privateKey, { userId: `user-${role}`, boardId, role, template }, now);
 
 let baseUrl: URL;
 const providers: YProvider[] = [];
@@ -44,12 +49,12 @@ afterAll(async () => {
   await harness.close();
 });
 
-function connect(boardId: string, role: WorkspaceRole = "member") {
+function connect(boardId: string, role: WorkspaceRole = "member", template?: BoardTemplate) {
   const document = new Y.Doc();
   const provider = new YProvider(baseUrl.host, boardId, document, {
     party: BOARD_ROOM_PARTY,
     protocol: "ws",
-    params: async () => ({ token: await tokenFor(boardId, role) }),
+    params: async () => ({ token: await tokenFor(boardId, role, undefined, template) }),
     // Without this, providers in the same process would sync over BroadcastChannel
     // instead of through the server, and the test would prove nothing.
     disableBc: true,
@@ -195,6 +200,64 @@ describe("realtime worker", () => {
     const restored = new Y.Doc();
     Y.applyUpdate(restored, new Uint8Array(row!.state));
     expect(readBoard(restored)).toEqual(readBoard(alice.document));
+  });
+
+  describe("board templates", () => {
+    const titles = (doc: Y.Doc) =>
+      readBoard(doc).columns.flatMap((column) => column.cards.map((card) => card.title));
+
+    it("fill a new demo board on the first connection, once", async () => {
+      const boardId = crypto.randomUUID();
+      // Two windows at once: whoever arrives first triggers the template.
+      const alice = connect(boardId, "owner", "demo");
+      const bob = connect(boardId, "owner", "demo");
+      await Promise.all([alice.synced, bob.synced]);
+
+      expect(titles(alice.document)).toContain("Start here: open this card");
+      expect(titles(bob.document)).toEqual(titles(alice.document));
+      expect(new Set(titles(alice.document)).size).toBe(titles(alice.document).length);
+      const assignees = readBoard(alice.document)
+        .columns.flatMap((column) => column.cards)
+        .map((card) => card.assigneeId)
+        .filter(Boolean);
+      expect(new Set(assignees)).toEqual(new Set(["user-owner"]));
+    });
+
+    it("are not applied again after the cards were deleted", async () => {
+      const boardId = crypto.randomUUID();
+      const alice = connect(boardId, "owner", "demo");
+      await alice.synced;
+      alice.document.getMap("cards").clear();
+      await waitFor(async () => {
+        const storage = await harness
+          .getWorker()
+          .getDurableObjectStorage("BoardRoom", { name: boardId });
+        const [row] = await storage.exec<{ state: ArrayBuffer }>("SELECT state FROM snapshot");
+        const restored = new Y.Doc();
+        Y.applyUpdate(restored, new Uint8Array(row!.state));
+        return titles(restored).length === 0;
+      }, 15_000);
+
+      const later = connect(boardId, "owner", "demo");
+      await later.synced;
+      expect(titles(later.document)).toEqual([]);
+    }, 30_000);
+
+    it("are ignored for boards that were created without one", async () => {
+      const boardId = crypto.randomUUID();
+      const alice = connect(boardId);
+      await alice.synced;
+      addCard(alice.document, readBoard(alice.document).columns[0]!.id, "Mine");
+      await waitFor(async () => {
+        const fresh = connect(boardId);
+        await fresh.synced;
+        return titles(fresh.document).includes("Mine");
+      });
+
+      const withTemplate = connect(boardId, "owner", "demo");
+      await withTemplate.synced;
+      expect(titles(withTemplate.document)).toEqual(["Mine"]);
+    });
   });
 
   it("syncs a board between two clients and persists it", async () => {

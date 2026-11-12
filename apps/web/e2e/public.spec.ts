@@ -9,7 +9,8 @@ test("the landing page explains the project and leads to sign-in", async ({ page
     page.getByRole("link", { name: "Read the decision record on signed access tokens" }),
   ).toHaveAttribute("href", /docs\/adr\/0007-board-access-tokens\.md$/);
 
-  await page.getByRole("link", { name: "Try it now" }).click();
+  await expect(page.getByRole("button", { name: "Try the demo" })).toBeVisible();
+  await page.getByRole("link", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/sign-in$/);
 });
 

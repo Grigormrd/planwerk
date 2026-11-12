@@ -11,6 +11,7 @@ import {
   createBoard,
   createInvitation,
   createWorkspace,
+  openDemoBoard,
 } from "./workspaces";
 
 let privateKey: JWK;
@@ -38,6 +39,23 @@ async function boardWithViewer() {
 }
 
 describe("issueRealtimeToken", () => {
+  it("passes the board template on, so the room can fill a demo board", async () => {
+    const owner = await createUser(db, "Olga");
+    const demo = await openDemoBoard(db, owner.id);
+    const ws = await createWorkspace(db, owner.id, "Team");
+    const plain = await createBoard(db, owner.id, ws.id, "Plans");
+
+    const forDemo = await issueRealtimeToken(db, owner.id, demo.id, privateKey);
+    const forPlain = await issueRealtimeToken(db, owner.id, plain.id, privateKey);
+
+    expect(await verifyBoardToken(publicKey, forDemo.token, demo.id)).toMatchObject({
+      template: "demo",
+    });
+    expect(await verifyBoardToken(publicKey, forPlain.token, plain.id)).not.toHaveProperty(
+      "template",
+    );
+  });
+
   it("encodes the member's current role", async () => {
     const { owner, viewer, board } = await boardWithViewer();
 

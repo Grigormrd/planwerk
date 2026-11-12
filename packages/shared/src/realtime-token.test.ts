@@ -30,6 +30,16 @@ describe("board tokens", () => {
     });
   });
 
+  it("carry a board template when there is one", async () => {
+    const token = await signBoardToken(privateKey, {
+      userId: "user_1",
+      boardId,
+      role: "owner",
+      template: "demo",
+    });
+    expect(await verifyBoardToken(publicKey, token, boardId)).toMatchObject({ template: "demo" });
+  });
+
   it("are only valid for the board they were issued for", async () => {
     const token = await signBoardToken(privateKey, { userId: "user_1", boardId, role: "owner" });
     expect(await verifyBoardToken(publicKey, token, otherBoard)).toBeNull();
