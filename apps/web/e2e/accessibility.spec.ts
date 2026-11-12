@@ -30,6 +30,10 @@ for (const scheme of ["light", "dark"] as const) {
     test("public pages", async ({ page }) => {
       await page.goto("/");
       await expectNoViolations(page);
+      // Scrollbars and native form controls follow the theme too.
+      expect(
+        await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme),
+      ).toBe(scheme);
       await page.goto("/sign-in");
       await expectNoViolations(page);
       await page.goto("/this-page-does-not-exist");

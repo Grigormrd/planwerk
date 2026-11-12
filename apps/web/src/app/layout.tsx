@@ -28,6 +28,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Lets the browser draw scrollbars and form controls dark before the CSS loads.
+  colorScheme: "light dark",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
