@@ -6,6 +6,7 @@ import { Card, inputClass, RoleBadge, SectionTitle, Skeleton } from "@/component
 import { getDb } from "@/server/db";
 import { requireUser } from "@/server/session";
 import { listWorkspaces } from "@/server/workspaces";
+import { startDemoAction } from "../demo-action";
 import { createWorkspaceAction } from "./actions";
 
 export const metadata: Metadata = { title: "Workspaces · Planwerk" };
@@ -16,9 +17,14 @@ async function WorkspaceList() {
 
   if (items.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-foreground/15 p-8 text-center text-sm text-foreground/60">
-        No workspaces yet. Create one for your team or flat, then invite the others.
-      </p>
+      <div className="flex flex-col items-center gap-4 rounded-lg border border-dashed border-foreground/15 p-8 text-center text-sm text-foreground/60">
+        <p>No workspaces yet. Create one for your team or flat, then invite the others.</p>
+        <form action={startDemoAction}>
+          <SubmitButton variant="secondary" pendingLabel="Opening…">
+            Or open a demo board
+          </SubmitButton>
+        </form>
+      </div>
     );
   }
 

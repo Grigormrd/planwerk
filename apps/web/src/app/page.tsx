@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { SubmitButton } from "@/components/action-form";
 import { buttonClass } from "@/components/ui";
+import { startDemoAction } from "./demo-action";
 
 const REPO = "https://github.com/Grigormrd/planwerk";
 
@@ -26,7 +28,7 @@ const features = [
   },
   {
     title: "Try it without an account",
-    text: "Start as a guest and sign in with GitHub later to keep everything.",
+    text: "Open the demo board as a guest. Sign in with GitHub later to keep everything.",
   },
 ];
 
@@ -66,13 +68,19 @@ export default function Home() {
           instantly, and keep working when the connection drops.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/sign-in" className={buttonClass.primary}>
-            Try it now
+          <form action={startDemoAction}>
+            <SubmitButton pendingLabel="Opening…">Try the demo</SubmitButton>
+          </form>
+          <Link href="/sign-in" className={buttonClass.secondary}>
+            Sign in
           </Link>
           <a href={REPO} className={buttonClass.secondary}>
             View the code
           </a>
         </div>
+        <p className="text-sm text-foreground/60">
+          No sign-up needed. Open the demo board in two windows to see changes appear live.
+        </p>
       </header>
 
       <section aria-labelledby="features" className="flex flex-col gap-4">

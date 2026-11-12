@@ -1,4 +1,4 @@
-import { workspaceRoles } from "@planwerk/shared";
+import { type BoardTemplate, workspaceRoles } from "@planwerk/shared";
 import {
   boolean,
   index,
@@ -141,6 +141,8 @@ export const board = pgTable(
       .references(() => workspace.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
+    /** Starting content the realtime room applies once (see templates.ts). */
+    template: text("template").$type<BoardTemplate>(),
     ...timestamps,
   },
   (table) => [index("board_workspace_id_idx").on(table.workspaceId)],

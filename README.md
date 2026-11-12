@@ -14,7 +14,7 @@
 - **Card details** ✅: collaborative rich-text descriptions, assignee, due date and labels
 - **Offline editing** ✅: if the connection drops, keep working; changes survive a reload and merge when you're back ([ADR 8](docs/adr/0008-offline-copy-in-indexeddb.md))
 - **Workspaces & roles** ✅: owner, member and read-only viewer, enforced by the realtime server with signed board tokens ([ADR 7](docs/adr/0007-board-access-tokens.md))
-- **Guest sessions** ✅: try it without signing up
+- **Demo and guest sessions** ✅: "Try the demo" opens a board with example cards, no sign-up needed
 
 ## Tech stack
 

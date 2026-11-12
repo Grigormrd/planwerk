@@ -56,7 +56,7 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 
 ## Phase 6: Portfolio packaging
 
-- [ ] Guest demo with seed data (guest sign-in exists since Phase 1)
+- [x] Guest demo with seed data: "Try the demo" opens a board with example cards, filled once by the realtime room ([ADR 6](adr/0006-board-document-model.md))
 - [x] Landing page explaining features and architecture
 - [ ] README with GIF, final architecture diagram
 - [ ] "What was hard" write-up

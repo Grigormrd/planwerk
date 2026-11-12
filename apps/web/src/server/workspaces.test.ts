@@ -14,6 +14,7 @@ import {
   listInvitations,
   listMembers,
   listWorkspaces,
+  openDemoBoard,
   previewInvitation,
   removeMember,
   renameWorkspace,
@@ -216,5 +217,44 @@ describe("guest accounts", () => {
       { id: shared.id, name: "Shared", role: "owner", memberCount: 1 },
     ]);
     expect(await listWorkspaces(db, guest.id)).toEqual([]);
+  });
+});
+
+describe("demo board", () => {
+  it("is created once per user, in a workspace they own", async () => {
+    const guest = await createUser(db, "Guest", true);
+
+    const first = await openDemoBoard(db, guest.id);
+    const again = await openDemoBoard(db, guest.id);
+
+    expect(again).toEqual(first);
+    expect(await listWorkspaces(db, guest.id)).toEqual([
+      { id: first.workspaceId, name: "Demo team", role: "owner", memberCount: 1 },
+    ]);
+    expect(await getBoard(db, guest.id, first.id)).toMatchObject({
+      name: "Product launch",
+      template: "demo",
+      role: "owner",
+    });
+  });
+
+  it("is not someone else's demo the user was invited to", async () => {
+    const owner = await createUser(db, "Olga");
+    const visitor = await createUser(db, "Vic");
+    const theirs = await openDemoBoard(db, owner.id);
+    const { token } = await createInvitation(db, owner.id, theirs.workspaceId, "member");
+    await acceptInvitation(db, visitor.id, token);
+
+    const mine = await openDemoBoard(db, visitor.id);
+    expect(mine.id).not.toBe(theirs.id);
+  });
+
+  it("is separate from ordinary boards", async () => {
+    const owner = await createUser(db);
+    const ws = await createWorkspace(db, owner.id, "Team");
+    const plain = await createBoard(db, owner.id, ws.id, "Plans");
+
+    expect((await getBoard(db, owner.id, plain.id)).template).toBeNull();
+    expect((await openDemoBoard(db, owner.id)).id).not.toBe(plain.id);
   });
 });
