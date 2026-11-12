@@ -54,12 +54,12 @@ Goal for v1: a live demo that explains itself in 30 seconds. Two browser windows
 - [x] Error and not-found pages, page titles, empty and loading states
 - [x] Lighthouse pass (public pages: performance 98–99, accessibility, best practices and SEO 100), dark mode checked with axe, link preview image, robots.txt and sitemap
 
-## Phase 6: Portfolio packaging
+## Phase 6: Portfolio packaging ✅
 
 - [x] Guest demo with seed data: "Try the demo" opens a board with example cards, filled once by the realtime room ([ADR 6](adr/0006-board-document-model.md))
 - [x] Landing page explaining features and architecture
-- [ ] README with GIF, final architecture diagram
-- [ ] "What was hard" write-up
+- [x] README with an animated preview (recorded from the end-to-end stack), final architecture and sequence diagrams
+- [x] "What was hard" write-up in the README
 
 ## Later
 
