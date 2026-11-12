@@ -13,7 +13,8 @@
     "db:migrate": "dotenv -e .env.local -- node scripts/migrate.mjs",
     "db:studio": "dotenv -e .env.local -- drizzle-kit studio",
     "realtime-keys": "node scripts/realtime-keys.mjs",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "record-demo": "playwright test --config playwright.record.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
