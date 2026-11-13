@@ -2,7 +2,8 @@
 export function StagePlaceholder() {
   return (
     <div aria-hidden className="flex h-full flex-col gap-4">
-      <div className="h-[4.75rem]" />
+      {/* Height of the timeline: two rows on phones, one row from sm up. */}
+      <div className="h-[90px] sm:h-[54px]" />
       <div className="flex-1 rounded-2xl border border-foreground/10 p-4 sm:p-5">
         <div className="mb-4 h-5 w-24 rounded bg-foreground/10" />
         <div className="flex gap-4 overflow-hidden">
