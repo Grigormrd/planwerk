@@ -128,6 +128,7 @@ export function BoardColumn({
   return (
     <section
       aria-label={column.title}
+      data-column-id={column.id}
       className={`${columnShell} ${isOver ? "border-foreground/30" : ""}`}
     >
       <ColumnHeader column={column} index={index} count={count} actions={actions} />
@@ -144,7 +145,7 @@ export function BoardColumn({
                 onDelete={() => actions.deleteCard(card.id)}
               />
             ) : (
-              <li key={card.id}>
+              <li key={card.id} data-card-id={card.id}>
                 <ReadOnlyCard card={card} members={members} onOpen={() => onOpenCard(card.id)} />
               </li>
             ),

@@ -28,6 +28,62 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 25%, transparent) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--foreground) 85%, transparent);
+  color: var(--background);
+}
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+}
+
+/* Timeline under the landing page board */
+.history-range {
+  appearance: none;
+  height: 1.75rem;
+  background: transparent;
+  cursor: pointer;
+}
+.history-range:disabled {
+  cursor: default;
+}
+.history-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: color-mix(in srgb, var(--foreground) 25%, transparent);
+}
+.history-range::-moz-range-track {
+  height: 2px;
+  background: color-mix(in srgb, var(--foreground) 25%, transparent);
+}
+/* The playhead: a full-height bar rather than a knob. */
+.history-range::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: -13px;
+  width: 4px;
+  height: 28px;
+  border-radius: 2px;
+  background: var(--foreground);
+}
+.history-range::-moz-range-thumb {
+  width: 4px;
+  height: 28px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--foreground);
+}
+
 /* Placeholders need readable contrast too (Tailwind's default is 50%). */
 input::placeholder,
 textarea::placeholder {
@@ -95,4 +151,41 @@ textarea::placeholder {
   line-height: normal;
   white-space: nowrap;
   user-select: none;
+}
+
+/* One board update travelling along the path on the landing page. At rest
+   it is parked on the last stop. */
+.update-packet {
+  /* Presence colour of "You" on the landing page board. */
+  background: #4338ca;
+  left: 87.5%;
+}
+.update-packet[data-running] {
+  animation: packet-x 3.2s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes packet-x {
+  0% {
+    left: 12.5%;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  28%,
+  36% {
+    left: 37.5%;
+  }
+  58%,
+  66% {
+    left: 62.5%;
+  }
+  100% {
+    left: 87.5%;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .update-packet[data-running] {
+    animation: none;
+  }
 }

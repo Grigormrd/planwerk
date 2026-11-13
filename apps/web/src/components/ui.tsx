@@ -7,6 +7,9 @@ export const inputClass =
 export const buttonClass = {
   primary:
     "inline-flex items-center justify-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-50",
+  /** The landing page's main call to action. */
+  large:
+    "inline-flex items-center justify-center gap-2 rounded-lg bg-foreground px-6 py-3 text-base font-semibold text-background transition hover:opacity-90 disabled:opacity-50",
   secondary:
     "inline-flex items-center justify-center gap-2 rounded-md border border-foreground/15 px-4 py-2 text-sm font-medium transition hover:bg-foreground/5 disabled:opacity-50",
   ghost:
